@@ -28,7 +28,7 @@
          android:launchMode="singleTask"></activity>
 
       <activity
-         android:name=".Noise"
+         android:name=".NoiseActivity"
          android:label="@string/title_activity_temperature"
          android:launchMode="singleTask"></activity>
       <activity

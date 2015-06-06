@@ -15,8 +15,6 @@ import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.Wearable;
 import com.kupferwerk.kupferriegel.detection.NoiseOverDetector;
-import com.kupferwerk.kupferriegel.detection.DetectorResult;
-import com.kupferwerk.kupferriegel.detection.HandshakeDetector;
 import com.kupferwerk.kupferriegel.detection.TemperatureOverDetector;
 import com.kupferwerk.kupferriegel.device.DeviceController;
 import com.kupferwerk.kupferriegel.device.ReadingInfo;
@@ -30,30 +28,29 @@ import io.relayr.RelayrSdk;
 import io.relayr.model.User;
 import rx.Observer;
 import rx.Subscriber;
-import rx.functions.Action1;
 
 public class MainActivity extends Activity
       implements DataApi.DataListener, GoogleApiClient.ConnectionCallbacks,
       GoogleApiClient.OnConnectionFailedListener {
 
    private GoogleApiClient apiClient;
-   private boolean connected;
-   private static float count = 22.0f;
 
-   @Override
+   TemperatureOverDetector temperatureOverDetector;
+   NoiseOverDetector noiseOverDetector;
+
    public void onConnected(Bundle bundle) {
-      this.connected = true;
       temperatureOverDetector.setGoogleApiClient(apiClient);
+      noiseOverDetector.setGoogleApiClient(apiClient);
    }
 
    @Override
    public void onConnectionFailed(ConnectionResult connectionResult) {
-
+      // nothing to do
    }
 
    @Override
    public void onConnectionSuspended(int i) {
-      this.connected = false;
+      // noting to do here
    }
 
    Observer<User> loginObserver = new Observer<User>() {
@@ -142,7 +139,6 @@ public class MainActivity extends Activity
       this.apiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this)
             .addOnConnectionFailedListener(this).addApi(Wearable.API).build();
       userController.logIn(this, loginObserver);
-
    }
 
    @Override
@@ -177,12 +173,10 @@ public class MainActivity extends Activity
       });
    }
 
-   TemperatureOverDetector temperatureOverDetector;
-
    private void loadDevices() {
       temperatureOverDetector = new TemperatureOverDetector(deviceController);
       temperatureOverDetector.start();
-      NoiseOverDetector noiseOverDetector = new NoiseOverDetector(deviceController);
+      noiseOverDetector = new NoiseOverDetector(deviceController);
       noiseOverDetector.start();
       //      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
       //      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe
