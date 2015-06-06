@@ -27,10 +27,16 @@ public class DataListenerService extends WearableListenerService {
    }
 
    private void handleTemperature(DataMap dataMap) {
-      Intent intent = new Intent(this, TemperatureActivity.class);
-      float temperature = dataMap.getFloat("temperature");
-      intent.putExtra("temperature", temperature);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      startActivity(intent);
+      float temperature = dataMap.getFloat("extra.temperature");
+      String key = TemperatureActivity.class.getCanonicalName();
+
+      if (Syncher.getInstance().isRegistered(key)) {
+         Syncher.getInstance().getSynchable(key).syncData(new Temperature(temperature));
+      } else {
+         Intent intent = new Intent(this, TemperatureActivity.class);
+         intent.putExtra("extra.temperature", temperature);
+         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+         startActivity(intent);
+      }
    }
 }

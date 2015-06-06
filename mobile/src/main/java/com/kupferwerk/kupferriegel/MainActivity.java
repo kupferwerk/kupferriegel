@@ -75,7 +75,8 @@ public class MainActivity extends Activity
                return;
             }
             PutDataMapRequest mapRequest = PutDataMapRequest.create("/temperature");
-            mapRequest.getDataMap().putFloat("temperature", (count + 1f));
+            count = count + 1f;
+            mapRequest.getDataMap().putFloat("extra.temperature", (count));
 
             PutDataRequest putDataReq = mapRequest.asPutDataRequest();
             PendingResult<DataApi.DataItemResult> pendingResult =
