@@ -45,6 +45,7 @@ public class RegistrationController {
    }
 
    public void onPause() {
+      registrationPresenter.onPause();
       stopRecording();
    }
 
@@ -59,6 +60,7 @@ public class RegistrationController {
    public void showRegistrationOverlay(boolean show) {
       if (show) {
          overlayRegistrationView.setVisibility(View.VISIBLE);
+         registrationPresenter.update();
          activity.setSupportActionBar(overlayToolbar);
       } else {
          recordingController.stopRecording();
