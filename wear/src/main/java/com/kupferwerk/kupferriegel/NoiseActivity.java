@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.support.wearable.view.WatchViewStub;
 import android.view.View;
@@ -25,6 +26,22 @@ public class NoiseActivity extends Activity implements Synchable {
    @InjectView (R.id.value)
    TextView value;
 
+   private long lastUpdate;
+   private Handler timer = new Handler() {
+      @Override
+      public void handleMessage(Message msg) {
+         super.handleMessage(msg);
+         long now = System.currentTimeMillis();
+
+         if (now - lastUpdate > 15000) {
+            Syncher.getInstance().unregister(NoiseActivity.class.getCanonicalName());
+            NoiseActivity.this.finish();
+         } else {
+            sendEmptyMessageDelayed(0, 5000);
+         }
+      }
+   };
+
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -37,6 +54,7 @@ public class NoiseActivity extends Activity implements Synchable {
             float noise = getIntent().getFloatExtra("extra.noise", 0f);
             setNoise(noise);
 
+            timer.sendEmptyMessageDelayed(0, 5000);
             Vibrator v = (Vibrator) NoiseActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
             // Vibrate for 500 milliseconds
             v.vibrate(500);
@@ -62,6 +80,7 @@ public class NoiseActivity extends Activity implements Synchable {
    }
 
    private void setNoise(final float noise) {
+      lastUpdate = System.currentTimeMillis();
       new Handler(this.getMainLooper()).post(new Runnable() {
          @Override
          public void run() {

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.support.wearable.view.WatchViewStub;
 import android.view.View;
@@ -25,9 +26,32 @@ public class TemperatureActivity extends Activity implements Synchable {
    @InjectView (R.id.value)
    TextView value;
 
+   private long lastUpdate;
+   private Handler timer = new Handler() {
+      @Override
+      public void handleMessage(Message msg) {
+         super.handleMessage(msg);
+         long now = System.currentTimeMillis();
+
+         if (now - lastUpdate > 15000) {
+            Syncher.getInstance().unregister(TemperatureActivity.class.getCanonicalName());
+            TemperatureActivity.this.finish();
+         } else {
+            sendEmptyMessageDelayed(0, 5000);
+         }
+      }
+   };
+
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
+      new Handler().postDelayed(new Runnable() {
+         @Override
+         public void run() {
+
+         }
+      }, 5000);
+
       setContentView(R.layout.act_temperature);
       final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
       stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
@@ -36,7 +60,7 @@ public class TemperatureActivity extends Activity implements Synchable {
             ButterKnife.inject(TemperatureActivity.this);
             float temperature = getIntent().getFloatExtra("extra.temperature", -372f);
             setTemperature(temperature);
-
+            timer.sendEmptyMessageDelayed(0, 5000);
             Vibrator v =
                   (Vibrator) TemperatureActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
             // Vibrate for 500 milliseconds
@@ -63,12 +87,13 @@ public class TemperatureActivity extends Activity implements Synchable {
    }
 
    private void setTemperature(final float temperature) {
+      lastUpdate = System.currentTimeMillis();
       new Handler(this.getMainLooper()).post(new Runnable() {
          @Override
          public void run() {
             background.setBackgroundColor(
                   getResources().getColor(StatusChecker.getColorTemperatur(temperature)));
-            value.setText(temperature + "°C");
+            value.setText("Cool down!\n" + temperature + "°C");
          }
       });
    }
