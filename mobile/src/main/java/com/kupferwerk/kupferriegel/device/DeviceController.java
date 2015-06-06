@@ -37,7 +37,7 @@ public class DeviceController {
             loadDevice(deviceModel).subscribe(new Subscriber<TransmitterDevice>() {
                                                  @Override
                                                  public void onCompleted() {
-                                                    subscriber.onCompleted();
+
                                                  }
 
                                                  @Override
@@ -95,7 +95,7 @@ public class DeviceController {
                   .subscribe(new Subscriber<List<TransmitterDevice>>() {
                      @Override
                      public void onCompleted() {
-                        subscriber.onCompleted();
+                        
                      }
 
                      @Override
