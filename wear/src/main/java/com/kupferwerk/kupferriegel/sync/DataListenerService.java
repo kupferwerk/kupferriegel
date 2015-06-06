@@ -26,7 +26,7 @@ public class DataListenerService extends WearableListenerService {
             } else if (item.getUri().getPath().compareTo("/noise") == 0) {
                handleNoise(dataMap);
             } else if (item.getUri().getPath().compareTo("/hugs") == 0) {
-               handleNoise(dataMap);
+               handleHugs(dataMap);
             }
          }
       }
@@ -67,7 +67,7 @@ public class DataListenerService extends WearableListenerService {
       if (Syncher.getInstance().isRegistered(key)) {
          Syncher.getInstance().getSynchable(key).syncData(new Hugs(hugs));
       } else {
-         Intent intent = new Intent(this, NoiseActivity.class);
+         Intent intent = new Intent(this, HugActivity.class);
          intent.putExtra("extra.hugs", hugs);
          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
          startActivity(intent);

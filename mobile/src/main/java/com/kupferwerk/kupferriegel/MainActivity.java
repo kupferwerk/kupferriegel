@@ -12,8 +12,11 @@ import android.widget.Toolbar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.kupferwerk.kupferriegel.detection.DetectorResult;
 import com.kupferwerk.kupferriegel.detection.HandshakeDetector;
@@ -99,7 +102,7 @@ public class MainActivity extends Activity
    public void onConnected(Bundle bundle) {
       temperatureOverDetector.setGoogleApiClient(apiClient);
       noiseOverDetector.setGoogleApiClient(apiClient);
-      
+
    }
 
    @Override
@@ -205,12 +208,23 @@ public class MainActivity extends Activity
             final SharedPreferences preferences = getSharedPreferences("shakes", MODE_PRIVATE);
             int count = preferences.getInt(SHAKE_COUNT, 0);
             preferences.edit().putInt(SHAKE_COUNT, count++).apply();
+
+
+            Log.wtf("Shake", "Shake should be detected");
+            PutDataMapRequest request = PutDataMapRequest.create("/hugs");
+            request.getDataMap().putFloat("extra.hugs", count);
+
+            PutDataRequest putDataRequest = request.asPutDataRequest();
+            PendingResult<DataApi.DataItemResult> pendingResult =
+                     Wearable.DataApi.putDataItem(apiClient, putDataRequest);
+            }
          }
-      });
-      //      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
-      //      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe
-      // (subscriber);
-      //      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
+
+         );
+         //      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
+         //      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe
+         // (subscriber);
+         //      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
+      }
    }
-}
 
