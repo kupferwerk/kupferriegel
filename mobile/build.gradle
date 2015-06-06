@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
    compileSdkVersion 22
-   buildToolsVersion "23.0.0 rc2"
+   buildToolsVersion "22.0.1"
 
    defaultConfig {
       applicationId "com.kupferwerk.kupferriegel"
@@ -23,4 +23,5 @@ dependencies {
    compile fileTree(dir: 'libs', include: ['*.jar'])
    wearApp project(':wear')
    compile 'com.google.android.gms:play-services:+'
+   compile 'io.relayr:android-sdk:0.0.12'
 }
