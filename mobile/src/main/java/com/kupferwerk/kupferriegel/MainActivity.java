@@ -1,13 +1,14 @@
 package com.kupferwerk.kupferriegel;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
+import com.kupferwerk.kupferriegel.detection.TemperatureOverDetector;
 import com.kupferwerk.kupferriegel.device.DeviceController;
 import com.kupferwerk.kupferriegel.device.ReadingInfo;
 import com.kupferwerk.kupferriegel.registration.RegistrationController;
@@ -17,12 +18,11 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import io.relayr.RelayrSdk;
-import io.relayr.model.DeviceModel;
 import io.relayr.model.User;
 import rx.Observer;
 import rx.Subscriber;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
    @InjectView (R.id.toolbar_activity)
    Toolbar toolbar;
@@ -89,7 +89,7 @@ public class MainActivity extends ActionBarActivity {
    public void onBackPressed() {
       if (registrationController.isOverlayShown()) {
          registrationController.showRegistrationOverlay(false);
-         setSupportActionBar(toolbar);
+         setActionBar(toolbar);
       } else {
          super.onBackPressed();
       }
@@ -100,7 +100,7 @@ public class MainActivity extends ActionBarActivity {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
       ButterKnife.inject(this);
-      setSupportActionBar(toolbar);
+      setActionBar(toolbar);
       registrationController = new RegistrationController(this);
       registrationController.onCreate();
       userController.logIn(this, loginObserver);
@@ -136,29 +136,12 @@ public class MainActivity extends ActionBarActivity {
    }
 
    private void loadDevices() {
-
-      Subscriber subscriber = new Subscriber<ReadingInfo>() {
-
-         @Override
-         public void onCompleted() {
-
-         }
-
-         @Override
-         public void onError(Throwable e) {
-
-         }
-
-         @Override
-         public void onNext(ReadingInfo readingInfo) {
-            printReading(readingInfo);
-         }
-      };
-
-      deviceController.getDevice(DeviceModel.TEMPERATURE_HUMIDITY).subscribe(subscriber);
-      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
-      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe(subscriber);
-      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
+      TemperatureOverDetector temperatureOverDetector =
+            new TemperatureOverDetector(deviceController);
+      temperatureOverDetector.start();
+      //      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
+      //      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe(subscriber);
+      //      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
    }
 
    private void printReading(ReadingInfo readingInfo) {

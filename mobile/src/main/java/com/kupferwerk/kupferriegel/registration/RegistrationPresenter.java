@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.kupferwerk.kupferriegel.R;
@@ -18,6 +19,8 @@ public class RegistrationPresenter {
    Button btnStartStop;
    @InjectView (R.id.spinner)
    Spinner spinner;
+   @InjectView (R.id.progressbar_recording)
+   ProgressBar recordingProgress;
 
    private final RegistrationController parentController;
    private int selectedTypeIndex = 0;
@@ -32,8 +35,21 @@ public class RegistrationPresenter {
       initButton();
    }
 
+   public void onPause() {
+
+   }
+
    public void onResume() {
+      setViewStates();
+   }
+
+   public void update() {
+      setViewStates();
+   }
+
+   private void setViewStates() {
       setBtnTextViaState(!parentController.isRecording());
+      setProgressBarViaState(parentController.isRecording());
    }
 
    private void initSpinner() {
@@ -67,17 +83,27 @@ public class RegistrationPresenter {
 
    private void handleBtnClick() {
       triggerActionViaState(parentController.isRecording());
-      setBtnTextViaState(!parentController.isRecording());
+      setViewStates();
+   }
+
+   private void setProgressBarViaState(boolean recording) {
+      if (recording) {
+         setProgressBarVisibility(View.VISIBLE);
+      } else {
+         setProgressBarVisibility(View.INVISIBLE);
+      }
    }
 
    private void triggerActionViaState(boolean startState) {
       if (startState) {
          parentController.stopRecording();
-         setBtnText(R.string.start_registering);
       } else {
          parentController.startRecording(mapIndexToUsableSequenceIndex());
-         setBtnText(R.string.stop_registering);
       }
+   }
+
+   private void setProgressBarVisibility(int visibility) {
+      recordingProgress.setVisibility(visibility);
    }
 
    private void setBtnTextViaState(boolean recording) {
