@@ -1,13 +1,19 @@
 package com.kupferwerk.kupferriegel;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.Wearable;
 import com.kupferwerk.kupferriegel.detection.TemperatureOverDetector;
 import com.kupferwerk.kupferriegel.device.DeviceController;
 import com.kupferwerk.kupferriegel.device.ReadingInfo;
@@ -22,7 +28,9 @@ import io.relayr.model.User;
 import rx.Observer;
 import rx.Subscriber;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity
+      implements DataApi.DataListener, GoogleApiClient.ConnectionCallbacks,
+      GoogleApiClient.OnConnectionFailedListener {
 
    @InjectView (R.id.toolbar_activity)
    Toolbar toolbar;
@@ -49,11 +57,32 @@ public class MainActivity extends ActionBarActivity {
       }
    };
 
+   private GoogleApiClient apiClient;
+   private boolean connected;
+   private static float count = 22.0f;
+
+   @Override
+   public void onConnected(Bundle bundle) {
+      this.connected = true;
+   }
+
+   @Override
+   public void onConnectionFailed(ConnectionResult connectionResult) {
+
+   }
+
+   @Override
+   public void onConnectionSuspended(int i) {
+      this.connected = false;
+   }
+
+   @Override
+   public void onDataChanged(DataEventBuffer dataEventBuffer) {
+
+   }
+
    @Override
    public boolean onOptionsItemSelected(MenuItem item) {
-      // Handle action bar item clicks here. The action bar will
-      // automatically handle clicks on the Home/Up button, so long
-      // as you specify a parent activity in AndroidManifest.xml.
       int id = item.getItemId();
       if (id == R.id.action_logout) {
          userController.logOut();
@@ -62,9 +91,10 @@ public class MainActivity extends ActionBarActivity {
       } else if (id == R.id.action_login) {
          userController.logIn(this, loginObserver);
          finish();
+      } else if (id == R.id.games_services) {
+         startActivity(new Intent(this, GamesLoginActivity.class));
          return true;
       }
-
       return super.onOptionsItemSelected(item);
    }
 
@@ -89,7 +119,7 @@ public class MainActivity extends ActionBarActivity {
    public void onBackPressed() {
       if (registrationController.isOverlayShown()) {
          registrationController.showRegistrationOverlay(false);
-         setSupportActionBar(toolbar);
+         setActionBar(toolbar);
       } else {
          super.onBackPressed();
       }
@@ -100,14 +130,18 @@ public class MainActivity extends ActionBarActivity {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
       ButterKnife.inject(this);
-      setSupportActionBar(toolbar);
+      setActionBar(toolbar);
       registrationController = new RegistrationController(this);
       registrationController.onCreate();
+      this.apiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this)
+            .addOnConnectionFailedListener(this).addApi(Wearable.API).build();
       userController.logIn(this, loginObserver);
+
    }
 
    @Override
    protected void onPause() {
+      apiClient.disconnect();
       userController.onPause();
       registrationController.onPause();
       super.onPause();
@@ -116,6 +150,7 @@ public class MainActivity extends ActionBarActivity {
    @Override
    protected void onResume() {
       super.onResume();
+      apiClient.connect();
       registrationController.onResume();
       userController.loadUserInfo().subscribe(new Subscriber<User>() {
          @Override
@@ -138,9 +173,10 @@ public class MainActivity extends ActionBarActivity {
    private void loadDevices() {
       TemperatureOverDetector temperatureOverDetector = new TemperatureOverDetector(deviceController);
       temperatureOverDetector.start();
-//      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
-//      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe(subscriber);
-//      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
+      //      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
+      //      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe
+      // (subscriber);
+      //      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
    }
 
    private void printReading(ReadingInfo readingInfo) {
@@ -156,3 +192,4 @@ public class MainActivity extends ActionBarActivity {
       Log.d(getClass().getSimpleName(), log.toString());
    }
 }
+

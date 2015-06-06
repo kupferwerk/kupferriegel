@@ -10,6 +10,7 @@
       android:layout_marginTop="?android:attr/actionBarSize"
       android:padding="20dp">
 
+
       <Button
          android:id="@+id/btn_register_sequence"
          android:layout_width="match_parent"
@@ -19,10 +20,10 @@
 
    </RelativeLayout>
 
-   <android.support.v7.widget.Toolbar
+   <android.widget.Toolbar
       android:id="@+id/toolbar_activity"
       android:layout_width="match_parent"
-      android:layout_height="?android:attr/actionBarSize"></android.support.v7.widget.Toolbar>
+      android:layout_height="?android:attr/actionBarSize"/>
 
    <include
       android:id="@+id/overlay_registration"

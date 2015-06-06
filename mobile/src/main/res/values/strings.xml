@@ -9,4 +9,9 @@
    <string name="start_registering">Start recording</string>
    <string name="stop_registering">Stop recording</string>
    <string name="choose_sequence_type">Choose sequence type:</string>
+   <string name="games_services">Game Services</string>
+   <string name="signin_error">Could not sign in. Try again later</string>
+   <string name="logout">Logout</string>
+   <string name="login">Login</string>
+   <string name="show_achievements">Show Achievements</string>
 </resources>
