@@ -14,6 +14,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.Wearable;
+import com.kupferwerk.kupferriegel.detection.NoiseOverDetector;
 import com.kupferwerk.kupferriegel.detection.TemperatureOverDetector;
 import com.kupferwerk.kupferriegel.device.DeviceController;
 import com.kupferwerk.kupferriegel.device.ReadingInfo;
@@ -173,6 +174,8 @@ public class MainActivity extends Activity
    private void loadDevices() {
       TemperatureOverDetector temperatureOverDetector = new TemperatureOverDetector(deviceController);
       temperatureOverDetector.start();
+      NoiseOverDetector noiseOverDetector = new NoiseOverDetector(deviceController);
+      noiseOverDetector.start();
       //      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
       //      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe
       // (subscriber);
