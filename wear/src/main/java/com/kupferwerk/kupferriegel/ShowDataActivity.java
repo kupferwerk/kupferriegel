@@ -22,7 +22,6 @@ public class ShowDataActivity extends Activity {
          @Override
          public void onLayoutInflated(WatchViewStub stub) {
             ButterKnife.inject(ShowDataActivity.this);
-            dataView = (TextView) stub.findViewById(R.id.text);
             dataView.setText("Waiting for data");
          }
       });
