@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+   Google Play game services IDs.
+   Save this file as res/values/games-ids.xml in your project.
+   -->
+<resources>
+   <string name="app_id">284779890132</string>
+   <string name="achievement_beginner">CgkI1IvR8aQIEAIQAQ</string>
+   <string name="achievement_hug_dealer">CgkI1IvR8aQIEAIQAg</string>
+   <string name="achievement_cuddle_addicted">CgkI1IvR8aQIEAIQAw</string>
+   <string name="achievement_hugging_streak">CgkI1IvR8aQIEAIQBA</string>
+   <string name="achievement_heatseaker">CgkI1IvR8aQIEAIQBQ</string>
+</resources>

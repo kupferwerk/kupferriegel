@@ -2,5 +2,8 @@
    <string name="app_name">Kupferriegel</string>
 
    <string name="hello_world">Hello world!</string>
-   <string name="action_settings">Settings</string>
+   <string name="games_services">Settings</string>
+   <string name="signin_error">Could not sign in. Try again later</string>
+   <string name="logout">Logout</string>
+   <string name="login">Login</string>
 </resources>
