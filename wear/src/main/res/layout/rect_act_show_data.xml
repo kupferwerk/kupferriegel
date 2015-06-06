@@ -3,6 +3,7 @@
    xmlns:tools="http://schemas.android.com/tools"
    android:layout_width="match_parent"
    android:layout_height="match_parent"
+   android:background="@color/red"
    android:orientation="vertical"
    tools:context=".ShowDataActivity"
    tools:deviceIds="wear_square">
@@ -11,5 +12,8 @@
       android:id="@+id/text"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="@string/hello_square" />
+      android:layout_gravity="center"
+      android:text="@string/hello_square"
+      android:textColor="@color/white"
+      android:textSize="16sp" />
 </FrameLayout>
