@@ -14,8 +14,10 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.kupferwerk.kupferriegel.sync.Hugs;
 import com.kupferwerk.kupferriegel.sync.SyncContent;
 import com.kupferwerk.kupferriegel.sync.Synchable;
+import com.kupferwerk.kupferriegel.sync.Syncher;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -29,11 +31,11 @@ public class HugActivity extends Activity implements Synchable {
    TextView txtHugs;
 
    @Override
-   public void syncData(SyncContent content) {
+   public void syncData(final SyncContent content) {
       new Handler(getMainLooper()).post(new Runnable() {
          @Override
          public void run() {
-            updateHugs(100);
+            updateHugs(((Hugs) content).getHugs());
          }
       });
    }
@@ -86,8 +88,15 @@ public class HugActivity extends Activity implements Synchable {
    }
 
    @Override
+   protected void onResume() {
+      super.onResume();
+      Syncher.getInstance().register(getClass().getCanonicalName(), this);
+   }
+
+   @Override
    protected void onPause() {
       super.onPause();
+      Syncher.getInstance().unregister(getClass().getCanonicalName());
       if (pulse != null && pulse.isRunning()) {
          pulse.cancel();
       }

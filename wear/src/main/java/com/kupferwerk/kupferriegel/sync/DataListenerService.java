@@ -8,6 +8,7 @@ import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.WearableListenerService;
+import com.kupferwerk.kupferriegel.HugActivity;
 import com.kupferwerk.kupferriegel.NoiseActivity;
 import com.kupferwerk.kupferriegel.TemperatureActivity;
 
@@ -23,6 +24,8 @@ public class DataListenerService extends WearableListenerService {
             if (item.getUri().getPath().compareTo("/temperature") == 0) {
                handleTemperature(dataMap);
             } else if (item.getUri().getPath().compareTo("/noise") == 0) {
+               handleNoise(dataMap);
+            } else if (item.getUri().getPath().compareTo("/hugs") == 0) {
                handleNoise(dataMap);
             }
          }
@@ -52,6 +55,20 @@ public class DataListenerService extends WearableListenerService {
       } else {
          Intent intent = new Intent(this, NoiseActivity.class);
          intent.putExtra("extra.noise", noise);
+         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+         startActivity(intent);
+      }
+   }
+
+   private void handleHugs(DataMap dataMap) {
+      int hugs = dataMap.getInt("extra.hugs");
+      String key = HugActivity.class.getCanonicalName();
+
+      if (Syncher.getInstance().isRegistered(key)) {
+         Syncher.getInstance().getSynchable(key).syncData(new Hugs(hugs));
+      } else {
+         Intent intent = new Intent(this, NoiseActivity.class);
+         intent.putExtra("extra.hugs", hugs);
          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
          startActivity(intent);
       }
