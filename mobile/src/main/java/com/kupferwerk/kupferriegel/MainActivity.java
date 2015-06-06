@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -19,15 +20,12 @@ public class MainActivity extends Activity
       GoogleApiClient.OnConnectionFailedListener {
 
    private GoogleApiClient apiClient;
+   private boolean connected;
+   private static int count = 0;
 
    @Override
    public void onConnected(Bundle bundle) {
-      PutDataMapRequest mapRequest = PutDataMapRequest.create("/wunderbar");
-      mapRequest.getDataMap().putString("Hello", "Hello from my phone");
-
-      PutDataRequest putDataReq = mapRequest.asPutDataRequest();
-      PendingResult<DataApi.DataItemResult> pendingResult =
-            Wearable.DataApi.putDataItem(apiClient, putDataReq);
+      this.connected = true;
    }
 
    @Override
@@ -37,7 +35,7 @@ public class MainActivity extends Activity
 
    @Override
    public void onConnectionSuspended(int i) {
-
+      this.connected = false;
    }
 
    @Override
@@ -66,6 +64,22 @@ public class MainActivity extends Activity
       setContentView(R.layout.activity_main);
       this.apiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this)
             .addOnConnectionFailedListener(this).addApi(Wearable.API).build();
+
+      View btnSend = findViewById(R.id.btn_send);
+      btnSend.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+            if (!connected) {
+               return;
+            }
+            PutDataMapRequest mapRequest = PutDataMapRequest.create("/wunderbar");
+            mapRequest.getDataMap().putInt("COUNT", ++count);
+
+            PutDataRequest putDataReq = mapRequest.asPutDataRequest();
+            PendingResult<DataApi.DataItemResult> pendingResult =
+                  Wearable.DataApi.putDataItem(apiClient, putDataReq);
+         }
+      });
    }
 
    @Override
