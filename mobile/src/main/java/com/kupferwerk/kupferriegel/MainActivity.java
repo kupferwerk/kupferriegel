@@ -215,8 +215,9 @@ public class MainActivity extends Activity
                                               int count = preferences.getInt(SHAKE_COUNT, 0);
                                               preferences.edit().putInt(SHAKE_COUNT, count++)
                                                     .apply();
-
                                               Log.wtf("Shake", "Shake should be detected");
+                                              achievementController
+                                                    .check(apiClient, MainActivity.this);
                                               PutDataMapRequest request =
                                                     PutDataMapRequest.create("/hugs");
                                               request.getDataMap().putFloat("extra.hugs", count);
