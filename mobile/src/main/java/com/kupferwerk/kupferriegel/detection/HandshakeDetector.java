@@ -21,7 +21,6 @@ import rx.schedulers.Schedulers;
 
 public class HandshakeDetector implements Detector {
 
-   private static final int MAX_RECORDED_ITEMS = 10;
    private static final String TAG = HandshakeDetector.class.getSimpleName();
    private final DeviceController deviceController;
    private List<DTWModel> recordedData;
@@ -46,7 +45,7 @@ public class HandshakeDetector implements Detector {
                public DetectorResult call(ReadingInfo aBoolean) {
                   return new DetectorResult().setDetectorType(DetectorManager.DETECTOR_HANDSHAKE);
                }
-            }).observeOn(Schedulers.io());
+            }).subscribeOn(Schedulers.io());
    }
 
    @Override
@@ -55,15 +54,32 @@ public class HandshakeDetector implements Detector {
 
    private void fillTemplateData() {
       templateData = new LinkedList<>();
-      templateData.add(new Vector3DDTWModel(0.76, 0.59, -0.53));
-      templateData.add(new Vector3DDTWModel(0.0, 1.0, -0.24));
-      templateData.add(new Vector3DDTWModel(0.0, 0.84, -0.07));
-      templateData.add(new Vector3DDTWModel(0.42, -0.74, -0.16));
-      templateData.add(new Vector3DDTWModel(-0.21, -1.16, 0.7));
-      templateData.add(new Vector3DDTWModel(0.66, -0.09, -0.29));
-      templateData.add(new Vector3DDTWModel(0.0, 0.94, 0.0));
-      templateData.add(new Vector3DDTWModel(0.14, 0.99, 0.32));
-      templateData.add(new Vector3DDTWModel(0.26, 0.85, -0.36));
+      //      templateData.add(new Vector3DDTWModel(0.25, -0.95, -0.95));
+      //      templateData.add(new Vector3DDTWModel(-0.13, -0.82, -0.82));
+      //      templateData.add(new Vector3DDTWModel(-0.61, -0.76, -0.76));
+      //      templateData.add(new Vector3DDTWModel(-0.6, -0.8, -0.8));
+      //      templateData.add(new Vector3DDTWModel(-0.33, -0.93, -0.93));
+      //      templateData.add(new Vector3DDTWModel(0.09, -0.98, -0.98));
+      //      templateData.add(new Vector3DDTWModel(0.42, -0.85, -0.85));
+      //      templateData.add(new Vector3DDTWModel(0.2, -0.93, -0.93));
+      //      templateData.add(new Vector3DDTWModel(-0.16, -0.96, -0.96));
+      //      templateData.add(new Vector3DDTWModel(-0.52, -0.92, -0.92));
+      //      templateData.add(new Vector3DDTWModel(-0.67, -0.74, -0.74));
+      //      templateData.add(new Vector3DDTWModel(-0.4, -0.91, -0.91));
+      //      templateData.add(new Vector3DDTWModel(0.0, -0.98, -0.98));
+      //      templateData.add(new Vector3DDTWModel(0.38, -0.81, -0.81));
+      //      templateData.add(new Vector3DDTWModel(0.51, -0.81, -0.81));
+      templateData.add(new Vector3DDTWModel(0.25, 0, 0));
+      templateData.add(new Vector3DDTWModel(-0.6, 0, 0));
+      templateData.add(new Vector3DDTWModel(-0.33, 0, 0));
+      templateData.add(new Vector3DDTWModel(0.0, 0, 0));
+      templateData.add(new Vector3DDTWModel(0.42, 0, 0));
+      templateData.add(new Vector3DDTWModel(0.2, 0, 0));
+      templateData.add(new Vector3DDTWModel(-0.16, 0, 0));
+      templateData.add(new Vector3DDTWModel(-0.67, 0, 0));
+      templateData.add(new Vector3DDTWModel(0.0, 0, 0));
+      templateData.add(new Vector3DDTWModel(0.38, 0, 0));
+      templateData.add(new Vector3DDTWModel(0.51, 0, 0));
    }
 
    private boolean handleData(final ReadingInfo readingInfo) {
@@ -76,13 +92,18 @@ public class HandshakeDetector implements Detector {
       double x = currentAcceleration.get("x");
       double y = currentAcceleration.get("y");
       double z = currentAcceleration.get("z");
-      recordedData.add(new Vector3DDTWModel(x, y, z));
-      if (recordedData.size() > MAX_RECORDED_ITEMS) {
-         recordedData.remove(recordedData.size() - 1);
+      Log.d(TAG, "templateData.add(new Vector3DDTWModel(" + x + ", " + y + ", " + y + "));");
+      recordedData.add(new Vector3DDTWModel(x, 0, 0));
+      if (recordedData.size() < templateData.size() / 0.75) {
+         return false;
       }
+      while (recordedData.size() > templateData.size() * 1.1) {
+         recordedData.remove(0);
+      }
+
       double similarity = DynamicTimeWarping.dtw(recordedData, templateData);
-      Log.d(TAG, "Similarity = " + similarity);
-      if (similarity > 0.5f) {
+      Log.d(TAG, "RecordedData=" + recordedData.size() + "; Similarity = " + similarity);
+      if (similarity < 4.0f) {
          recordedData.clear();
          return true;
       }
