@@ -35,21 +35,23 @@ public class DeviceController {
          @Override
          public void call(final Subscriber<? super ReadingInfo> subscriber) {
             loadDevice(deviceModel).subscribe(new Subscriber<TransmitterDevice>() {
-               @Override
-               public void onCompleted() {
-                  subscriber.onCompleted();
-               }
+                                                 @Override
+                                                 public void onCompleted() {
 
-               @Override
-               public void onError(Throwable e) {
-                  subscriber.onError(e);
-               }
+                                                 }
 
-               @Override
-               public void onNext(TransmitterDevice transmitterDevice) {
-                  subscribeToCloudReadings(deviceModel, transmitterDevice, subscriber);
-               }
-            });
+                                                 @Override
+                                                 public void onError(Throwable e) {
+                                                    subscriber.onError(e);
+                                                 }
+
+                                                 @Override
+                                                 public void onNext(
+                                                       TransmitterDevice transmitterDevice) {
+                                                    subscribeToCloudReadings(deviceModel,
+                                                          transmitterDevice, subscriber);
+                                                 }
+                                              });
          }
       });
    }
@@ -93,7 +95,7 @@ public class DeviceController {
                   .subscribe(new Subscriber<List<TransmitterDevice>>() {
                      @Override
                      public void onCompleted() {
-                        subscriber.onCompleted();
+                        
                      }
 
                      @Override

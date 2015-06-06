@@ -24,5 +24,6 @@ dependencies {
    wearApp project(':wear')
    compile 'com.google.android.gms:play-services:+'
    compile 'io.relayr:android-sdk:0.0.13'
+   compile 'de.greenrobot:eventbus:2.4.0'
    compile 'com.jakewharton:butterknife:6.1.0'
 }
