@@ -37,12 +37,12 @@ public class DeviceController {
             loadDevice(deviceModel).subscribe(new Subscriber<TransmitterDevice>() {
                                                  @Override
                                                  public void onCompleted() {
-
+                                                    subscriber.onCompleted();
                                                  }
 
                                                  @Override
                                                  public void onError(Throwable e) {
-
+                                                    subscriber.onError(e);
                                                  }
 
                                                  @Override
@@ -51,8 +51,7 @@ public class DeviceController {
                                                     subscribeToCloudReadings(deviceModel,
                                                           transmitterDevice, subscriber);
                                                  }
-                                              }
-            );
+                                              });
          }
       });
    }
@@ -96,11 +95,12 @@ public class DeviceController {
                   .subscribe(new Subscriber<List<TransmitterDevice>>() {
                      @Override
                      public void onCompleted() {
+                        subscriber.onCompleted();
                      }
 
                      @Override
                      public void onError(Throwable e) {
-                        e.printStackTrace();
+                        subscriber.onError(e);
                      }
 
                      @Override
