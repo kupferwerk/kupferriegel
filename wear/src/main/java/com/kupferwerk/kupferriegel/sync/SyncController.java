@@ -19,9 +19,17 @@ public class SyncController implements DataApi.DataListener, GoogleApiClient.Con
             .addOnConnectionFailedListener(this).addApi(Wearable.API).build();
    }
 
+   public void connect() {
+      apiClient.connect();
+   }
+
+   public void disconnect() {
+      apiClient.disconnect();
+   }
+
    @Override
    public void onConnected(Bundle bundle) {
-
+      Wearable.DataApi.addListener(apiClient, this);
    }
 
    @Override

@@ -15,9 +15,12 @@ import dagger.Provides;
 @Module (complete = false, library = true)
 public class AppModule {
 
+
+
    @Provides
    @Singleton
    SyncController provideSyncController(final Context context) {
       return new SyncController(context);
    }
+
 }
