@@ -1,74 +1,117 @@
 package com.kupferwerk.kupferriegel.device;
 
-import android.app.Activity;
-import android.util.Log;
+import android.content.Context;
 
-import com.google.gson.Gson;
+import com.kupferwerk.kupferriegel.user.UserController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.relayr.RelayrSdk;
-import io.relayr.model.Device;
+import io.relayr.model.DeviceModel;
 import io.relayr.model.Reading;
+import io.relayr.model.Transmitter;
 import io.relayr.model.TransmitterDevice;
-import rx.Observer;
+import io.relayr.model.User;
+import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 
 public class DeviceController {
 
-   private final Activity activity;
-   private List<Device> devices;
-   private TransmitterDevice transmitterDevice;
+   private Context context;
+   private UserController userController;
 
-   public DeviceController(Activity activity) {
-      this.activity = activity;
+   public DeviceController(Context context, UserController userController) {
+      this.context = context;
+      this.userController = userController;
    }
 
-   public void loadDevices(String userId, final Observer<Reading> observer) {
-      Log.i("HTH", "Loading devices...");
+   public Observable<ReadingInfo> getDevice(final DeviceModel deviceModel) {
 
-      RelayrSdk.getRelayrApi().getUserDevices(userId).observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Observer<List<Device>>() {
+      return Observable.create(new Observable.OnSubscribe<ReadingInfo>() {
+
+         @Override
+         public void call(final Subscriber<? super ReadingInfo> subscriber) {
+            loadDevice(deviceModel).subscribe(new Subscriber<TransmitterDevice>() {
                @Override
                public void onCompleted() {
+                  subscriber.onCompleted();
                }
 
                @Override
                public void onError(Throwable e) {
-                  e.printStackTrace();
+                  subscriber.onError(e);
                }
 
                @Override
-               public void onNext(List<Device> devices) {
-                  DeviceController.this.devices = devices;
-                  for (Device device : devices) {
-                     subscribeForUpdates(device.toTransmitterDevice(), observer);
-                     break;
-                  }
+               public void onNext(TransmitterDevice transmitterDevice) {
+                  subscribeToCloudReadings(deviceModel, transmitterDevice, subscriber);
                }
             });
+         }
+      });
    }
 
-   private void subscribeForUpdates(final TransmitterDevice transmitterDevice,
-         final Observer<Reading> readingObserver) {
-      this.transmitterDevice = transmitterDevice;
-      RelayrSdk.getWebSocketClient().subscribe(transmitterDevice)
-            .observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Object>() {
-         @Override
-         public void onCompleted() {
-         }
+   private void subscribeToCloudReadings(final DeviceModel deviceModel,
+         TransmitterDevice transmitterDevice, final Subscriber<? super ReadingInfo> subscriber) {
+      transmitterDevice.subscribeToCloudReadings().map(
+
+            new Func1<Reading, ReadingInfo>() {
+               @Override
+               public ReadingInfo call(Reading reading) {
+                  ReadingInfo readingInfo = new ReadingInfo();
+                  readingInfo.setReading(reading);
+                  readingInfo.setDeviceModel(deviceModel);
+                  return readingInfo;
+               }
+            }).subscribe(subscriber);
+   }
+
+   private Observable<TransmitterDevice> loadDevice(final DeviceModel deviceModel) {
+
+      return Observable.create(new Observable.OnSubscribe<TransmitterDevice>() {
 
          @Override
-         public void onError(Throwable e) {
-         }
+         public void call(final Subscriber<? super TransmitterDevice> subscriber) {
+            User user = userController.getUser();
+            user.getTransmitters()
+                  .flatMap(new Func1<List<Transmitter>, Observable<List<TransmitterDevice>>>() {
+                     @Override
+                     public Observable<List<TransmitterDevice>> call(
+                           List<Transmitter> transmitters) {
+                        // This is a naive implementation. Users may own many WunderBars or other
+                        // kinds of transmitter.
+                        if (transmitters.isEmpty()) {
+                           return Observable.from(new ArrayList<List<TransmitterDevice>>());
+                        }
+                        return RelayrSdk.getRelayrApi()
+                              .getTransmitterDevices(transmitters.get(0).id);
+                     }
+                  }).observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(new Subscriber<List<TransmitterDevice>>() {
+                     @Override
+                     public void onCompleted() {
+                        subscriber.onCompleted();
+                     }
 
-         @Override
-         public void onNext(Object o) {
-            final Reading reading = new Gson().fromJson(o.toString(), Reading.class);
-            readingObserver.onNext(reading);
-            Log.i(DeviceController.class.getSimpleName(), "Device update: path:" + reading.path +
-                  "\nmeaning: " + reading.meaning +
-                  "\ndata: " + reading.value);
+                     @Override
+                     public void onError(Throwable e) {
+                        subscriber.onError(e);
+                     }
+
+                     @Override
+                     public void onNext(List<TransmitterDevice> devices) {
+                        for (TransmitterDevice device : devices) {
+                           if (device.model.equals(deviceModel.getId())) {
+                              subscriber.onNext(device);
+                              subscriber.onCompleted();
+                              return;
+                           }
+                        }
+                     }
+                  });
          }
       });
    }

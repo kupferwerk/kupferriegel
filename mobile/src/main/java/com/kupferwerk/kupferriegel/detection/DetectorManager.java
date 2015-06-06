@@ -1,5 +1,7 @@
 package com.kupferwerk.kupferriegel.detection;
 
+import com.kupferwerk.kupferriegel.device.DeviceController;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,10 +10,14 @@ import rx.Observable;
 public class DetectorManager {
 
    public static class Builder {
+      private DeviceController deviceController;
       private int flags;
 
       public DetectorManager build() {
-         return new DetectorManager(flags);
+         if (deviceController == null) {
+            throw new IllegalArgumentException("DeviceController has to be set.");
+         }
+         return new DetectorManager(flags, deviceController);
       }
 
       public void enableHandShakeDetection() {
@@ -21,18 +27,22 @@ public class DetectorManager {
       public void enableHugDetection() {
          flags = flags | DETECTOR_HUG;
       }
+
+      public void setDeviceController(DeviceController deviceController) {
+         this.deviceController = deviceController;
+      }
    }
 
    public static int DETECTOR_HANDSHAKE = 2;
    public static int DETECTOR_HUG = 1;
    private List<Detector> detectors;
 
-   private DetectorManager(int flags) {
+   private DetectorManager(int flags, final DeviceController deviceController) {
       this.detectors = new ArrayList<>();
       if ((flags & DETECTOR_HANDSHAKE) > 0) {
          // TODO Add handshake detector
       } else if ((flags & DETECTOR_HUG) > 0) {
-         // TODO Add hug detector
+         detectors.add(new HugDetector(deviceController));
       }
    }
 

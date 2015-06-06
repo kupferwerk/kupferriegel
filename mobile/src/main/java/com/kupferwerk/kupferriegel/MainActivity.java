@@ -3,10 +3,13 @@ package com.kupferwerk.kupferriegel;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.kupferwerk.kupferriegel.device.DeviceController;
+import com.kupferwerk.kupferriegel.device.ReadingInfo;
 import com.kupferwerk.kupferriegel.registration.RegistrationController;
 import com.kupferwerk.kupferriegel.user.UserController;
 
@@ -14,8 +17,10 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import io.relayr.RelayrSdk;
+import io.relayr.model.DeviceModel;
 import io.relayr.model.User;
 import rx.Observer;
+import rx.Subscriber;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -24,6 +29,8 @@ public class MainActivity extends ActionBarActivity {
    private RegistrationController registrationController;
 
    UserController userController = new UserController(this);
+   DeviceController deviceController = new DeviceController(this, userController);
+
    Observer<User> loginObserver = new Observer<User>() {
       @Override
       public void onCompleted() {
@@ -109,7 +116,61 @@ public class MainActivity extends ActionBarActivity {
    @Override
    protected void onResume() {
       super.onResume();
-      userController.onResume();
       registrationController.onResume();
+      userController.loadUserInfo().subscribe(new Subscriber<User>() {
+         @Override
+         public void onCompleted() {
+
+         }
+
+         @Override
+         public void onError(Throwable e) {
+
+         }
+
+         @Override
+         public void onNext(User user) {
+            loadDevices();
+         }
+      });
+   }
+
+   private void loadDevices() {
+
+      Subscriber subscriber = new Subscriber<ReadingInfo>() {
+
+         @Override
+         public void onCompleted() {
+
+         }
+
+         @Override
+         public void onError(Throwable e) {
+
+         }
+
+         @Override
+         public void onNext(ReadingInfo readingInfo) {
+            printReading(readingInfo);
+         }
+      };
+
+      deviceController.getDevice(DeviceModel.TEMPERATURE_HUMIDITY).subscribe(subscriber);
+      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
+      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe(subscriber);
+      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
+   }
+
+   private void printReading(ReadingInfo readingInfo) {
+
+      StringBuilder log = new StringBuilder();
+      log.append("device " + readingInfo.getDeviceModel().name());
+      log.append(";path=" + readingInfo.getReading().path);
+      log.append(";meaning=" + readingInfo.getReading().meaning);
+      log.append(";received=" + readingInfo.getReading().received);
+      log.append(";recorded=" + readingInfo.getReading().recorded);
+      log.append(";value=" + readingInfo.getReading().value);
+
+      Log.d(getClass().getSimpleName(), log.toString());
    }
 }
