@@ -1,6 +1,7 @@
 package com.kupferwerk.kupferriegel;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,7 +53,8 @@ public class MainActivity extends Activity
    @Override
    public boolean onOptionsItemSelected(MenuItem item) {
       int id = item.getItemId();
-      if (id == R.id.action_settings) {
+      if (id == R.id.games_services) {
+         startActivity(new Intent(this, GamesLoginActivity.class));
          return true;
       }
       return super.onOptionsItemSelected(item);
