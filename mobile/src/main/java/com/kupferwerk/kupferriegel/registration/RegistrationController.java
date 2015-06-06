@@ -1,9 +1,8 @@
 package com.kupferwerk.kupferriegel.registration;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toolbar;
 
 import com.kupferwerk.kupferriegel.R;
 
@@ -17,11 +16,11 @@ public class RegistrationController {
    @InjectView (R.id.toolbar_overlay)
    Toolbar overlayToolbar;
 
-   private final ActionBarActivity activity;
+   private final Activity activity;
    private final RegistrationPresenter registrationPresenter;
    private final RecordingController recordingController;
 
-   public RegistrationController(ActionBarActivity activity) {
+   public RegistrationController(Activity activity) {
       this.activity = activity;
       registrationPresenter = new RegistrationPresenter(this);
       recordingController = new RecordingController(this);
@@ -61,7 +60,7 @@ public class RegistrationController {
       if (show) {
          overlayRegistrationView.setVisibility(View.VISIBLE);
          registrationPresenter.update();
-         activity.setSupportActionBar(overlayToolbar);
+         activity.setActionBar(overlayToolbar);
       } else {
          recordingController.stopRecording();
          overlayRegistrationView.setVisibility(View.GONE);
