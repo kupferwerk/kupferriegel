@@ -75,7 +75,8 @@ public class TemperatureOverDetector {
       }).sample(5, TimeUnit.SECONDS).map(new Func1<Double, Float>() {
          @Override
          public Float call(Double aDouble) {
-            return (float) Math.round(aDouble);
+            float round = (float) Math.round(aDouble * 10f);
+            return round / 10f;
          }
       }).distinctUntilChanged().subscribe(subscriber);
    }
