@@ -10,7 +10,7 @@ package com.kupferwerk.kupferriegel.utils.dtw;
  */
 
 public class DynamicTimeWarping {
-   
+
    public static double dtw(final double[] v, final double[] w) {
       //     COST MATRIX:
       //   5|_|_|_|_|_|_|E| E = min Global Cost

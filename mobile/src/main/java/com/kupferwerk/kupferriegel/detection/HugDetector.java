@@ -3,12 +3,13 @@ package com.kupferwerk.kupferriegel.detection;
 import java.io.Serializable;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.functions.Func1;
 
 public class HugDetector implements Detector {
 
-   private Subscriber<? super DetectorResult> subscriber;
+   public HugDetector() {
+
+   }
 
    @Override
    public Observable<DetectorResult> start() {
@@ -25,9 +26,5 @@ public class HugDetector implements Detector {
 
    @Override
    public void stop() {
-      if (subscriber != null) {
-         subscriber.unsubscribe();
-      }
-      subscriber = null;
    }
 }
