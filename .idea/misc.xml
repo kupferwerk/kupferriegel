@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="GradleLocalSettings">
-    <option name="modificationStamps">
-      <map>
-        <entry key="$PROJECT_DIR$/../BaseAndroidApp" value="4276652514000" />
-        <entry key="$PROJECT_DIR$/../KWAndroidStandardTools" value="2807046958000" />
-        <entry key="$PROJECT_DIR$/../KWAndroidStandardTools/debugging" value="4251515802000" />
-        <entry key="$PROJECT_DIR$/../OpenIAB" value="7112296115000" />
-        <entry key="$PROJECT_DIR$/../aldi-sued-android/android-app" value="4251495141000" />
-        <entry key="$PROJECT_DIR$/../fuel-companion-android" value="8549760439000" />
-        <entry key="$PROJECT_DIR$/../herzrasen-v2-android" value="11222682455000" />
-        <entry key="$PROJECT_DIR$/../n3rditorium-toolbox/Toolbox" value="5631166520000" />
-        <entry key="$PROJECT_DIR$/../wetter-v2-android/wetter.com" value="12647911925000" />
-        <entry key="$USER_HOME$/android-sdk/samples/android-21/ui/activityscenetransition/ActivitySceneTransitionBasic" value="4255930443000" />
-      </map>
+  <component name="NullableNotNullManager">
+    <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
+    <option name="myDefaultNotNull" value="android.support.annotation.NonNull" />
+    <option name="myNullables">
+      <value>
+        <list size="4">
+          <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.Nullable" />
+          <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nullable" />
+          <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.Nullable" />
+          <item index="3" class="java.lang.String" itemvalue="android.support.annotation.Nullable" />
+        </list>
+      </value>
+    </option>
+    <option name="myNotNulls">
+      <value>
+        <list size="4">
+          <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.NotNull" />
+          <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nonnull" />
+          <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.NonNull" />
+          <item index="3" class="java.lang.String" itemvalue="android.support.annotation.NonNull" />
+        </list>
+      </value>
     </option>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -26,7 +34,7 @@
     <ConfirmationsSetting value="0" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" assert-keyword="true" jdk-15="true">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
