@@ -12,16 +12,12 @@ import com.kupferwerk.kupferriegel.TemperatureActivity;
 
 public class DataListenerService extends WearableListenerService {
 
-   public static String TEMPERATURE = "temperature";
-
    @Override
    public void onDataChanged(DataEventBuffer dataEvents) {
       super.onDataChanged(dataEvents);
-
       for (DataEvent dataEvent : dataEvents) {
          if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
             DataItem item = dataEvent.getDataItem();
-
             if (item.getUri().getPath().compareTo("/temperature") == 0) {
                DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                handleTemperature(dataMap);
@@ -32,8 +28,8 @@ public class DataListenerService extends WearableListenerService {
 
    private void handleTemperature(DataMap dataMap) {
       Intent intent = new Intent(this, TemperatureActivity.class);
-      float temperature = dataMap.getFloat(TEMPERATURE);
-      intent.putExtra(TemperatureActivity.EXTRA_TEMPERATURE, temperature);
+      float temperature = dataMap.getFloat("temperature");
+      intent.putExtra("temperature", temperature);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       startActivity(intent);
    }
