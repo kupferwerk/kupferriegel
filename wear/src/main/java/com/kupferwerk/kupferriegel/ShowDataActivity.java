@@ -5,9 +5,13 @@ import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 public class ShowDataActivity extends Activity {
 
-   private TextView mTextView;
+   @InjectView (R.id.text)
+   TextView dataView;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +21,9 @@ public class ShowDataActivity extends Activity {
       stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
          @Override
          public void onLayoutInflated(WatchViewStub stub) {
-            mTextView = (TextView) stub.findViewById(R.id.text);
+            ButterKnife.inject(ShowDataActivity.this);
+            dataView = (TextView) stub.findViewById(R.id.text);
+            dataView.setText("Waiting for data");
          }
       });
    }
