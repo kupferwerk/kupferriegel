@@ -23,4 +23,13 @@
       android:text="@string/login"
       android:visibility="gone" />
 
+   <Button
+      android:id="@+id/show_achievements"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|center_horizontal"
+      android:minHeight="48dp"
+      android:minWidth="48dp"
+      android:text="@string/show_achievements" />
+
 </FrameLayout>

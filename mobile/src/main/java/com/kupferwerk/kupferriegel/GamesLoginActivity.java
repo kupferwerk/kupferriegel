@@ -22,6 +22,8 @@ public class GamesLoginActivity extends Activity
    View login;
    @InjectView (R.id.logout)
    View logout;
+   @InjectView (R.id.show_achievements)
+   View showAchievements;
    private GoogleApiClient googleApiClient;
    private boolean mAutoStartSignInFlow = true;
    private boolean mResolvingConnectionFailure;
@@ -82,6 +84,11 @@ public class GamesLoginActivity extends Activity
       googleApiClient.connect();
    }
 
+   @OnClick (R.id.show_achievements)
+   public void showAchievements() {
+      startActivityForResult(Games.Achievements.getAchievementsIntent(googleApiClient), 42);
+   }
+
    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
       if (requestCode == RC_SIGN_IN) {
          mSignInClicked = false;
@@ -120,10 +127,12 @@ public class GamesLoginActivity extends Activity
    private void showLogin() {
       login.setVisibility(View.VISIBLE);
       logout.setVisibility(View.GONE);
+      showAchievements.setVisibility(View.GONE);
    }
 
    private void showLogout() {
       login.setVisibility(View.GONE);
+      showAchievements.setVisibility(View.VISIBLE);
       logout.setVisibility(View.VISIBLE);
    }
 }
