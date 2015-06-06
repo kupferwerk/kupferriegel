@@ -1,8 +1,10 @@
 package com.kupferwerk.kupferriegel;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.wearable.view.WatchViewStub;
 import android.view.View;
 import android.widget.TextView;
@@ -34,6 +36,11 @@ public class TemperatureActivity extends Activity implements Synchable {
             ButterKnife.inject(TemperatureActivity.this);
             float temperature = getIntent().getFloatExtra("extra.temperature", -372f);
             setTemperature(temperature);
+
+            Vibrator v =
+                  (Vibrator) TemperatureActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
+            // Vibrate for 500 milliseconds
+            v.vibrate(500);
          }
       });
    }

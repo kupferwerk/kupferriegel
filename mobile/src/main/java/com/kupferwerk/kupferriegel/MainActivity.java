@@ -39,6 +39,7 @@ public class MainActivity extends Activity
    @Override
    public void onConnected(Bundle bundle) {
       this.connected = true;
+      temperatureOverDetector.setGoogleApiClient(apiClient);
    }
 
    @Override
@@ -170,9 +171,10 @@ public class MainActivity extends Activity
       });
    }
 
+   TemperatureOverDetector temperatureOverDetector;
+
    private void loadDevices() {
-      TemperatureOverDetector temperatureOverDetector =
-            new TemperatureOverDetector(deviceController);
+      temperatureOverDetector = new TemperatureOverDetector(deviceController);
       temperatureOverDetector.start();
       //      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
       //      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe(subscriber);
