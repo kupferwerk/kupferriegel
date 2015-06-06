@@ -15,6 +15,8 @@ import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.Wearable;
 import com.kupferwerk.kupferriegel.detection.NoiseOverDetector;
+import com.kupferwerk.kupferriegel.detection.DetectorResult;
+import com.kupferwerk.kupferriegel.detection.HandshakeDetector;
 import com.kupferwerk.kupferriegel.detection.TemperatureOverDetector;
 import com.kupferwerk.kupferriegel.device.DeviceController;
 import com.kupferwerk.kupferriegel.device.ReadingInfo;
@@ -28,17 +30,31 @@ import io.relayr.RelayrSdk;
 import io.relayr.model.User;
 import rx.Observer;
 import rx.Subscriber;
+import rx.functions.Action1;
 
 public class MainActivity extends Activity
       implements DataApi.DataListener, GoogleApiClient.ConnectionCallbacks,
       GoogleApiClient.OnConnectionFailedListener {
 
-   @InjectView (R.id.toolbar_activity)
-   Toolbar toolbar;
-   private RegistrationController registrationController;
+   private GoogleApiClient apiClient;
+   private boolean connected;
+   private static float count = 22.0f;
 
-   UserController userController = new UserController(this);
-   DeviceController deviceController = new DeviceController(this, userController);
+   @Override
+   public void onConnected(Bundle bundle) {
+      this.connected = true;
+      temperatureOverDetector.setGoogleApiClient(apiClient);
+   }
+
+   @Override
+   public void onConnectionFailed(ConnectionResult connectionResult) {
+
+   }
+
+   @Override
+   public void onConnectionSuspended(int i) {
+      this.connected = false;
+   }
 
    Observer<User> loginObserver = new Observer<User>() {
       @Override
@@ -58,23 +74,25 @@ public class MainActivity extends Activity
       }
    };
 
-   private GoogleApiClient apiClient;
-   private boolean connected;
-   private static float count = 22.0f;
+   @InjectView (R.id.toolbar_activity)
+   Toolbar toolbar;
+   UserController userController = new UserController(this);
+   DeviceController deviceController = new DeviceController(this, userController);
+   private RegistrationController registrationController;
 
    @Override
-   public void onConnected(Bundle bundle) {
-      this.connected = true;
+   public void onBackPressed() {
+      if (registrationController.isOverlayShown()) {
+         registrationController.showRegistrationOverlay(false);
+         setActionBar(toolbar);
+      } else {
+         super.onBackPressed();
+      }
    }
 
-   @Override
-   public void onConnectionFailed(ConnectionResult connectionResult) {
-
-   }
-
-   @Override
-   public void onConnectionSuspended(int i) {
-      this.connected = false;
+   @OnClick (R.id.btn_register_sequence)
+   public void onBtnRegisterSequenceClick() {
+      registrationController.showRegistrationOverlay(true);
    }
 
    @Override
@@ -85,15 +103,15 @@ public class MainActivity extends Activity
    @Override
    public boolean onOptionsItemSelected(MenuItem item) {
       int id = item.getItemId();
-      if (id == R.id.action_logout) {
+      if (id == R.id.games_services) {
+         startActivity(new Intent(this, GamesLoginActivity.class));
+         return true;
+      } else if (id == R.id.action_logout) {
          userController.logOut();
          finish();
          return true;
       } else if (id == R.id.action_login) {
          userController.logIn(this, loginObserver);
-         finish();
-      } else if (id == R.id.games_services) {
-         startActivity(new Intent(this, GamesLoginActivity.class));
          return true;
       }
       return super.onOptionsItemSelected(item);
@@ -111,24 +129,11 @@ public class MainActivity extends Activity
       return super.onPrepareOptionsMenu(menu);
    }
 
-   @OnClick (R.id.btn_register_sequence)
-   public void onBtnRegisterSequenceClick() {
-      registrationController.showRegistrationOverlay(true);
-   }
-
-   @Override
-   public void onBackPressed() {
-      if (registrationController.isOverlayShown()) {
-         registrationController.showRegistrationOverlay(false);
-         setActionBar(toolbar);
-      } else {
-         super.onBackPressed();
-      }
-   }
-
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
+      this.apiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this)
+            .addOnConnectionFailedListener(this).addApi(Wearable.API).build();
       setContentView(R.layout.activity_main);
       ButterKnife.inject(this);
       setActionBar(toolbar);
@@ -145,6 +150,7 @@ public class MainActivity extends Activity
       apiClient.disconnect();
       userController.onPause();
       registrationController.onPause();
+      apiClient.disconnect();
       super.onPause();
    }
 
@@ -171,8 +177,10 @@ public class MainActivity extends Activity
       });
    }
 
+   TemperatureOverDetector temperatureOverDetector;
+
    private void loadDevices() {
-      TemperatureOverDetector temperatureOverDetector = new TemperatureOverDetector(deviceController);
+      temperatureOverDetector = new TemperatureOverDetector(deviceController);
       temperatureOverDetector.start();
       NoiseOverDetector noiseOverDetector = new NoiseOverDetector(deviceController);
       noiseOverDetector.start();
@@ -182,7 +190,7 @@ public class MainActivity extends Activity
       //      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
    }
 
-   private void printReading(ReadingInfo readingInfo) {
+   public static void printReading(ReadingInfo readingInfo) {
 
       StringBuilder log = new StringBuilder();
       log.append("device " + readingInfo.getDeviceModel().name());
@@ -192,7 +200,10 @@ public class MainActivity extends Activity
       log.append(";recorded=" + readingInfo.getReading().recorded);
       log.append(";value=" + readingInfo.getReading().value);
 
-      Log.d(getClass().getSimpleName(), log.toString());
+      Log.d(MainActivity.class.getSimpleName(), log.toString());
+      //      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
+      //      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe(subscriber);
+      //      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
    }
 }
 

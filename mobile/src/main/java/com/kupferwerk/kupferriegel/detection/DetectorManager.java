@@ -40,9 +40,9 @@ public class DetectorManager {
    private DetectorManager(int flags, final DeviceController deviceController) {
       this.detectors = new ArrayList<>();
       if ((flags & DETECTOR_HANDSHAKE) > 0) {
-         // TODO Add handshake detector
+         detectors.add(new HandshakeDetector(deviceController));
       } else if ((flags & DETECTOR_HUG) > 0) {
-         detectors.add(new HugDetector(deviceController));
+         // TODO implement
       }
    }
 
