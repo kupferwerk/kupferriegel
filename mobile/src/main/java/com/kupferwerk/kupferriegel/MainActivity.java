@@ -21,7 +21,7 @@ public class MainActivity extends Activity
 
    private GoogleApiClient apiClient;
    private boolean connected;
-   private static int count = 0;
+   private static float count = 22.5f;
 
    @Override
    public void onConnected(Bundle bundle) {
@@ -72,12 +72,13 @@ public class MainActivity extends Activity
             if (!connected) {
                return;
             }
-            PutDataMapRequest mapRequest = PutDataMapRequest.create("/wunderbar");
-            mapRequest.getDataMap().putInt("COUNT", ++count);
+            PutDataMapRequest mapRequest = PutDataMapRequest.create("/temperature");
+            mapRequest.getDataMap().putFloat("temperature", ++count);
 
             PutDataRequest putDataReq = mapRequest.asPutDataRequest();
             PendingResult<DataApi.DataItemResult> pendingResult =
                   Wearable.DataApi.putDataItem(apiClient, putDataReq);
+            // nothing to do with the pending result so far
          }
       });
    }
