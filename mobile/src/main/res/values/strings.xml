@@ -5,4 +5,8 @@
    <string name="action_logout">Logout</string>
    <string name="action_login">Login</string>
    <string name="calibrate">calibrate</string>
+   <string name="record_sequence">Record a reference sequence for a given sequence type:</string>
+   <string name="start_registering">Start recording</string>
+   <string name="stop_registering">Stop recording</string>
+   <string name="choose_sequence_type">Choose sequence type:</string>
 </resources>
