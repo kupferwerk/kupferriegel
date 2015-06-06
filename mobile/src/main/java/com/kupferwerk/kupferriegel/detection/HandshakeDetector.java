@@ -3,6 +3,7 @@ package com.kupferwerk.kupferriegel.detection;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.kupferwerk.kupferriegel.MainActivity;
 import com.kupferwerk.kupferriegel.device.DeviceController;
 import com.kupferwerk.kupferriegel.device.ReadingInfo;
 import com.kupferwerk.kupferriegel.utils.dtw.DTWModel;
@@ -66,6 +67,7 @@ public class HandshakeDetector implements Detector {
    }
 
    private boolean handleData(final ReadingInfo readingInfo) {
+      MainActivity.printReading(readingInfo);
       if (!TextUtils.equals(readingInfo.getReading().meaning, "acceleration")) {
          return false;
       }

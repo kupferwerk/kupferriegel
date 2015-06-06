@@ -10,10 +10,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.kupferwerk.kupferriegel.status.StatusChecker;
+import com.kupferwerk.kupferriegel.sync.Noise;
 import com.kupferwerk.kupferriegel.sync.SyncContent;
 import com.kupferwerk.kupferriegel.sync.Synchable;
 import com.kupferwerk.kupferriegel.sync.Syncher;
-import com.kupferwerk.kupferriegel.sync.Temperature;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -34,11 +34,10 @@ public class NoiseActivity extends Activity implements Synchable {
          @Override
          public void onLayoutInflated(WatchViewStub stub) {
             ButterKnife.inject(NoiseActivity.this);
-            float temperature = getIntent().getFloatExtra("extra.temperature", -372f);
-            setTemperature(temperature);
+            float noise = getIntent().getFloatExtra("extra.noise", 0f);
+            setNoise(noise);
 
-            Vibrator v =
-                  (Vibrator) NoiseActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
+            Vibrator v = (Vibrator) NoiseActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
             // Vibrate for 500 milliseconds
             v.vibrate(500);
          }
@@ -59,16 +58,16 @@ public class NoiseActivity extends Activity implements Synchable {
 
    @Override
    public void syncData(SyncContent content) {
-      setTemperature(((Temperature) content).getTemperature());
+      setNoise(((Noise) content).getNoise());
    }
 
-   private void setTemperature(final float temperature) {
+   private void setNoise(final float noise) {
       new Handler(this.getMainLooper()).post(new Runnable() {
          @Override
          public void run() {
             background.setBackgroundColor(
-                  getResources().getColor(StatusChecker.getColorTemperatur(temperature)));
-            value.setText(temperature + "");
+                  getResources().getColor(StatusChecker.getColorTemperatur(noise)));
+            value.setText(noise + "");
          }
       });
    }
