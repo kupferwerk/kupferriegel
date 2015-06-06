@@ -14,6 +14,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.Wearable;
+import com.kupferwerk.kupferriegel.detection.DetectorResult;
+import com.kupferwerk.kupferriegel.detection.HandshakeDetector;
 import com.kupferwerk.kupferriegel.detection.TemperatureOverDetector;
 import com.kupferwerk.kupferriegel.device.DeviceController;
 import com.kupferwerk.kupferriegel.device.ReadingInfo;
@@ -27,6 +29,7 @@ import io.relayr.RelayrSdk;
 import io.relayr.model.User;
 import rx.Observer;
 import rx.Subscriber;
+import rx.functions.Action1;
 
 public class MainActivity extends Activity
       implements DataApi.DataListener, GoogleApiClient.ConnectionCallbacks,
@@ -52,13 +55,6 @@ public class MainActivity extends Activity
       this.connected = false;
    }
 
-   @InjectView (R.id.toolbar_activity)
-   Toolbar toolbar;
-   private RegistrationController registrationController;
-
-   UserController userController = new UserController(this);
-   DeviceController deviceController = new DeviceController(this, userController);
-
    Observer<User> loginObserver = new Observer<User>() {
       @Override
       public void onCompleted() {
@@ -76,6 +72,39 @@ public class MainActivity extends Activity
          invalidateOptionsMenu();
       }
    };
+   @InjectView (R.id.toolbar_activity)
+   Toolbar toolbar;
+   UserController userController = new UserController(this);
+   DeviceController deviceController = new DeviceController(this, userController);
+   private RegistrationController registrationController;
+
+   public static void printReading(ReadingInfo readingInfo) {
+
+      StringBuilder log = new StringBuilder();
+      log.append("device " + readingInfo.getDeviceModel().name());
+      log.append(";path=" + readingInfo.getReading().path);
+      log.append(";meaning=" + readingInfo.getReading().meaning);
+      log.append(";received=" + readingInfo.getReading().received);
+      log.append(";recorded=" + readingInfo.getReading().recorded);
+      log.append(";value=" + readingInfo.getReading().value);
+
+      Log.d(MainActivity.class.getSimpleName(), log.toString());
+   }
+
+   @Override
+   public void onBackPressed() {
+      if (registrationController.isOverlayShown()) {
+         registrationController.showRegistrationOverlay(false);
+         setActionBar(toolbar);
+      } else {
+         super.onBackPressed();
+      }
+   }
+
+   @OnClick (R.id.btn_register_sequence)
+   public void onBtnRegisterSequenceClick() {
+      registrationController.showRegistrationOverlay(true);
+   }
 
    @Override
    public void onDataChanged(DataEventBuffer dataEventBuffer) {
@@ -110,21 +139,6 @@ public class MainActivity extends Activity
       }
 
       return super.onPrepareOptionsMenu(menu);
-   }
-
-   @OnClick (R.id.btn_register_sequence)
-   public void onBtnRegisterSequenceClick() {
-      registrationController.showRegistrationOverlay(true);
-   }
-
-   @Override
-   public void onBackPressed() {
-      if (registrationController.isOverlayShown()) {
-         registrationController.showRegistrationOverlay(false);
-         setActionBar(toolbar);
-      } else {
-         super.onBackPressed();
-      }
    }
 
    @Override
@@ -176,21 +190,21 @@ public class MainActivity extends Activity
    private void loadDevices() {
       temperatureOverDetector = new TemperatureOverDetector(deviceController);
       temperatureOverDetector.start();
+      HandshakeDetector handshakeDetector = new HandshakeDetector(deviceController);
+      handshakeDetector.start().subscribe(new Action1<DetectorResult>() {
+         @Override
+         public void call(DetectorResult detectorResult) {
+            Toast.makeText(MainActivity.this, "Shake your hands!", Toast.LENGTH_LONG).show();
+         }
+      }, new Action1<Throwable>() {
+         @Override
+         public void call(Throwable throwable) {
+            Toast.makeText(MainActivity.this, "Error occured! " + throwable.getMessage(),
+                  Toast.LENGTH_LONG).show();
+         }
+      });
       //      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
       //      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe(subscriber);
       //      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
-   }
-
-   private void printReading(ReadingInfo readingInfo) {
-
-      StringBuilder log = new StringBuilder();
-      log.append("device " + readingInfo.getDeviceModel().name());
-      log.append(";path=" + readingInfo.getReading().path);
-      log.append(";meaning=" + readingInfo.getReading().meaning);
-      log.append(";received=" + readingInfo.getReading().received);
-      log.append(";recorded=" + readingInfo.getReading().recorded);
-      log.append(";value=" + readingInfo.getReading().value);
-
-      Log.d(getClass().getSimpleName(), log.toString());
    }
 }
