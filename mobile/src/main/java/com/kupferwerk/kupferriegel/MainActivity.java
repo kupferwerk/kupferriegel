@@ -8,11 +8,11 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.kupferwerk.kupferriegel.device.DeviceController;
+import com.kupferwerk.kupferriegel.device.ReadingInfo;
 import com.kupferwerk.kupferriegel.user.UserController;
 
 import io.relayr.RelayrSdk;
 import io.relayr.model.DeviceModel;
-import io.relayr.model.Reading;
 import io.relayr.model.User;
 import rx.Observer;
 import rx.Subscriber;
@@ -105,23 +105,41 @@ public class MainActivity extends Activity {
    }
 
    private void loadDevices() {
-      deviceController.getDevice(DeviceModel.TEMPERATURE_HUMIDITY)
-            .subscribe(new Subscriber<Reading>() {
 
-               @Override
-               public void onCompleted() {
+      Subscriber subscriber = new Subscriber<ReadingInfo>() {
 
-               }
+         @Override
+         public void onCompleted() {
 
-               @Override
-               public void onError(Throwable e) {
+         }
 
-               }
+         @Override
+         public void onError(Throwable e) {
 
-               @Override
-               public void onNext(Reading reading) {
-                  Log.d(getClass().getSimpleName(), "Reading: " + reading.value);
-               }
-            });
+         }
+
+         @Override
+         public void onNext(ReadingInfo readingInfo) {
+            printReading(readingInfo);
+         }
+      };
+
+      deviceController.getDevice(DeviceModel.TEMPERATURE_HUMIDITY).subscribe(subscriber);
+      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
+      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe(subscriber);
+      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
+   }
+
+   private void printReading(ReadingInfo readingInfo) {
+
+      StringBuilder log = new StringBuilder();
+      log.append("device " + readingInfo.getDeviceModel().name());
+      log.append(";path=" + readingInfo.getReading().path);
+      log.append(";meaning=" + readingInfo.getReading().meaning);
+      log.append(";received=" + readingInfo.getReading().received);
+      log.append(";recorded=" + readingInfo.getReading().recorded);
+      log.append(";value=" + readingInfo.getReading().value);
+
+      Log.d(getClass().getSimpleName(), log.toString());
    }
 }

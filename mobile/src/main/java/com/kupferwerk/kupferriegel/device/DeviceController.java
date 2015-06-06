@@ -28,12 +28,12 @@ public class DeviceController {
       this.userController = userController;
    }
 
-   public Observable<Reading> getDevice(final DeviceModel deviceModel) {
+   public Observable<ReadingInfo> getDevice(final DeviceModel deviceModel) {
 
-      return Observable.create(new Observable.OnSubscribe<Reading>() {
+      return Observable.create(new Observable.OnSubscribe<ReadingInfo>() {
 
          @Override
-         public void call(final Subscriber<? super Reading> subscriber) {
+         public void call(final Subscriber<? super ReadingInfo> subscriber) {
             loadDevice(deviceModel).subscribe(new Subscriber<TransmitterDevice>() {
                                                  @Override
                                                  public void onCompleted() {
@@ -48,14 +48,28 @@ public class DeviceController {
                                                  @Override
                                                  public void onNext(
                                                        TransmitterDevice transmitterDevice) {
-                                                    transmitterDevice.subscribeToCloudReadings()
-                                                          .subscribe(subscriber);
+                                                    subscribeToCloudReadings(deviceModel,
+                                                          transmitterDevice, subscriber);
                                                  }
                                               }
-
             );
          }
       });
+   }
+
+   private void subscribeToCloudReadings(final DeviceModel deviceModel,
+         TransmitterDevice transmitterDevice, final Subscriber<? super ReadingInfo> subscriber) {
+      transmitterDevice.subscribeToCloudReadings().map(
+
+            new Func1<Reading, ReadingInfo>() {
+               @Override
+               public ReadingInfo call(Reading reading) {
+                  ReadingInfo readingInfo = new ReadingInfo();
+                  readingInfo.setReading(reading);
+                  readingInfo.setDeviceModel(deviceModel);
+                  return readingInfo;
+               }
+            }).subscribe(subscriber);
    }
 
    private Observable<TransmitterDevice> loadDevice(final DeviceModel deviceModel) {
