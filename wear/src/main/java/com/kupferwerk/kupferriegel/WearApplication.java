@@ -14,6 +14,6 @@ public class WearApplication extends Application {
    }
 
    private Object getRootModule() {
-      return new RootModule();
+      return new RootModule(getApplicationContext());
    }
 }

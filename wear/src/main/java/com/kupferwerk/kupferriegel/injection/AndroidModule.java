@@ -6,6 +6,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 
+import com.kupferwerk.kupferriegel.WearApplication;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -14,6 +18,7 @@ import dagger.Provides;
  */
 @Module (complete = false, library = true)
 public class AndroidModule {
+
 
    @Provides
    SharedPreferences provideDefaultSharedPreferences(final Context context) {
