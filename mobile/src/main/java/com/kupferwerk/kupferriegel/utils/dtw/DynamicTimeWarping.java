@@ -11,7 +11,7 @@ package com.kupferwerk.kupferriegel.utils.dtw;
 
 public class DynamicTimeWarping {
 
-   public static double dtw(final double[] v, final double[] w) {
+   public static double dtw(final DTWModel[] v, final DTWModel[] w) {
       //     COST MATRIX:
       //   5|_|_|_|_|_|_|E| E = min Global Cost
       //   4|_|_|_|_|_|_|_| S = Start point
@@ -31,20 +31,20 @@ public class DynamicTimeWarping {
          int maxJ = w.length - 1;
 
          // Calculate the values for the first column, from the bottom up.
-         dtw[0][0] = distance(v[0], w[0]);
+         dtw[0][0] = v[0].distance(w[0]);
          for (int j = 1; j <= maxJ; j++) {
-            dtw[0][j] = dtw[0][j - 1] + distance(v[0], w[j]);
+            dtw[0][j] = dtw[0][j - 1] + v[0].distance(w[j]);
          }
 
          for (int i = 1; i <= maxI; i++) {  // i = columns
             // Calculate the value for the bottom row of the current column
             //    (i,0) = LocalCost(i,0) + GlobalCost(i-1,0)
-            dtw[i][0] = dtw[i - 1][0] + distance(v[i], w[0]);
+            dtw[i][0] = dtw[i - 1][0] + v[i].distance(w[0]);
 
             for (int j = 1; j <= maxJ; j++) {  // j = rows
                // (i,j) = LocalCost(i,j) + minGlobalCost{(i-1,j),(i-1,j-1),(i,j-1)}
                double minGlobalCost = min(dtw[i - 1][j], dtw[i - 1][j - 1], dtw[i][j - 1]);
-               dtw[i][j] = minGlobalCost + distance(v[i], w[j]);
+               dtw[i][j] = minGlobalCost + v[i].distance(w[j]);
             }  // end for loop
          }  // end for loop
 
@@ -52,10 +52,6 @@ public class DynamicTimeWarping {
       } else {
          return Double.MAX_VALUE;
       }
-   }
-
-   private static double distance(double v1, double v2) {
-      return Math.abs(v1 - v2);
    }
 
    private static double min(double x, double y) {
