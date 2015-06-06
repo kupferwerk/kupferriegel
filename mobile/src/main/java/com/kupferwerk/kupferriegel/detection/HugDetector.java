@@ -1,30 +1,43 @@
 package com.kupferwerk.kupferriegel.detection;
 
-import java.io.Serializable;
+import com.kupferwerk.kupferriegel.device.DeviceController;
+import com.kupferwerk.kupferriegel.device.ReadingInfo;
 
+import io.relayr.model.DeviceModel;
 import rx.Observable;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class HugDetector implements Detector {
 
-   public HugDetector() {
+   private final DeviceController deviceController;
 
+   public HugDetector(DeviceController deviceController) {
+      this.deviceController = deviceController;
    }
 
    @Override
    public Observable<DetectorResult> start() {
-      Observable<String> a = Observable.just("abc");
-      Observable<Integer> b = Observable.just(1, 2, 4);
-      return Observable.merge(a, b).map(new Func1<Serializable, DetectorResult>() {
-         @Override
-         public DetectorResult call(Serializable serializable) {
-
-            return null;
-         }
-      });
+      return Observable.merge(deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE),
+            deviceController.getDevice(DeviceModel.TEMPERATURE_HUMIDITY))
+            .filter(new Func1<ReadingInfo, Boolean>() {
+               @Override
+               public Boolean call(ReadingInfo readingInfo) {
+                  return handleHugData(readingInfo);
+               }
+            }).map(new Func1<ReadingInfo, DetectorResult>() {
+               @Override
+               public DetectorResult call(ReadingInfo aBoolean) {
+                  return new DetectorResult().setDetectorType(DetectorManager.DETECTOR_HUG);
+               }
+            }).observeOn(Schedulers.io());
    }
 
    @Override
    public void stop() {
+   }
+
+   private boolean handleHugData(final ReadingInfo readingInfo) {
+      return false;
    }
 }
