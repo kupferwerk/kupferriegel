@@ -7,7 +7,13 @@ import io.relayr.model.User;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class LoginHelper {
+public class UserController {
+
+   private final Activity activity;
+
+   public UserController(Activity activity) {
+      this.activity = activity;
+   }
 
    public void logIn(Activity activity, final Observer<User> observer) {
       RelayrSdk.logIn(activity).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
