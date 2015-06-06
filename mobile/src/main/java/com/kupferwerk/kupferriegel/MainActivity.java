@@ -1,7 +1,8 @@
 package com.kupferwerk.kupferriegel;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,18 +10,27 @@ import android.widget.Toast;
 
 import com.kupferwerk.kupferriegel.device.DeviceController;
 import com.kupferwerk.kupferriegel.device.ReadingInfo;
+import com.kupferwerk.kupferriegel.registration.RegistrationController;
 import com.kupferwerk.kupferriegel.user.UserController;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import io.relayr.RelayrSdk;
 import io.relayr.model.DeviceModel;
 import io.relayr.model.User;
 import rx.Observer;
 import rx.Subscriber;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
+
+   @InjectView (R.id.toolbar_activity)
+   Toolbar toolbar;
+   private RegistrationController registrationController;
 
    UserController userController = new UserController(this);
    DeviceController deviceController = new DeviceController(this, userController);
+
    Observer<User> loginObserver = new Observer<User>() {
       @Override
       public void onCompleted() {
@@ -70,22 +80,43 @@ public class MainActivity extends Activity {
       return super.onPrepareOptionsMenu(menu);
    }
 
+   @OnClick (R.id.btn_register_sequence)
+   public void onBtnRegisterSequenceClick() {
+      registrationController.showRegistrationOverlay(true);
+   }
+
+   @Override
+   public void onBackPressed() {
+      if (registrationController.isOverlayShown()) {
+         registrationController.showRegistrationOverlay(false);
+         setSupportActionBar(toolbar);
+      } else {
+         super.onBackPressed();
+      }
+   }
+
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
+      ButterKnife.inject(this);
+      setSupportActionBar(toolbar);
+      registrationController = new RegistrationController(this);
+      registrationController.onCreate();
       userController.logIn(this, loginObserver);
    }
 
    @Override
    protected void onPause() {
       userController.onPause();
+      registrationController.onPause();
       super.onPause();
    }
 
    @Override
    protected void onResume() {
       super.onResume();
+      registrationController.onResume();
       userController.loadUserInfo().subscribe(new Subscriber<User>() {
          @Override
          public void onCompleted() {
