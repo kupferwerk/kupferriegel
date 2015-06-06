@@ -14,6 +14,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.Wearable;
+import com.kupferwerk.kupferriegel.detection.NoiseOverDetector;
 import com.kupferwerk.kupferriegel.detection.DetectorResult;
 import com.kupferwerk.kupferriegel.detection.HandshakeDetector;
 import com.kupferwerk.kupferriegel.detection.TemperatureOverDetector;
@@ -72,24 +73,12 @@ public class MainActivity extends Activity
          invalidateOptionsMenu();
       }
    };
+
    @InjectView (R.id.toolbar_activity)
    Toolbar toolbar;
    UserController userController = new UserController(this);
    DeviceController deviceController = new DeviceController(this, userController);
    private RegistrationController registrationController;
-
-   public static void printReading(ReadingInfo readingInfo) {
-
-      StringBuilder log = new StringBuilder();
-      log.append("device " + readingInfo.getDeviceModel().name());
-      log.append(";path=" + readingInfo.getReading().path);
-      log.append(";meaning=" + readingInfo.getReading().meaning);
-      log.append(";received=" + readingInfo.getReading().received);
-      log.append(";recorded=" + readingInfo.getReading().recorded);
-      log.append(";value=" + readingInfo.getReading().value);
-
-      Log.d(MainActivity.class.getSimpleName(), log.toString());
-   }
 
    @Override
    public void onBackPressed() {
@@ -123,7 +112,6 @@ public class MainActivity extends Activity
          return true;
       } else if (id == R.id.action_login) {
          userController.logIn(this, loginObserver);
-         finish();
          return true;
       }
       return super.onOptionsItemSelected(item);
@@ -151,11 +139,15 @@ public class MainActivity extends Activity
       setActionBar(toolbar);
       registrationController = new RegistrationController(this);
       registrationController.onCreate();
+      this.apiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this)
+            .addOnConnectionFailedListener(this).addApi(Wearable.API).build();
       userController.logIn(this, loginObserver);
+
    }
 
    @Override
    protected void onPause() {
+      apiClient.disconnect();
       userController.onPause();
       registrationController.onPause();
       apiClient.disconnect();
@@ -190,21 +182,28 @@ public class MainActivity extends Activity
    private void loadDevices() {
       temperatureOverDetector = new TemperatureOverDetector(deviceController);
       temperatureOverDetector.start();
-      HandshakeDetector handshakeDetector = new HandshakeDetector(deviceController);
-      handshakeDetector.start().subscribe(new Action1<DetectorResult>() {
-         @Override
-         public void call(DetectorResult detectorResult) {
-            Toast.makeText(MainActivity.this, "Shake your hands!", Toast.LENGTH_LONG).show();
-         }
-      }, new Action1<Throwable>() {
-         @Override
-         public void call(Throwable throwable) {
-            Toast.makeText(MainActivity.this, "Error occured! " + throwable.getMessage(),
-                  Toast.LENGTH_LONG).show();
-         }
-      });
+      NoiseOverDetector noiseOverDetector = new NoiseOverDetector(deviceController);
+      noiseOverDetector.start();
+      //      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
+      //      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe
+      // (subscriber);
+      //      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
+   }
+
+   public static void printReading(ReadingInfo readingInfo) {
+
+      StringBuilder log = new StringBuilder();
+      log.append("device " + readingInfo.getDeviceModel().name());
+      log.append(";path=" + readingInfo.getReading().path);
+      log.append(";meaning=" + readingInfo.getReading().meaning);
+      log.append(";received=" + readingInfo.getReading().received);
+      log.append(";recorded=" + readingInfo.getReading().recorded);
+      log.append(";value=" + readingInfo.getReading().value);
+
+      Log.d(MainActivity.class.getSimpleName(), log.toString());
       //      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
       //      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe(subscriber);
       //      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
    }
 }
+

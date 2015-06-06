@@ -42,11 +42,11 @@
          android:text="@string/start_registering" />
    </LinearLayout>
 
-   <Toolbar
+   <android.widget.Toolbar
       android:id="@+id/toolbar_overlay"
       android:layout_width="match_parent"
       android:layout_height="?android:attr/actionBarSize">
-      android:background="@color/primary">
-   </Toolbar>
+      android:background="@color/primary"></android.widget.Toolbar>>
+
 
 </FrameLayout>
