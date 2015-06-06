@@ -6,9 +6,6 @@ import android.support.wearable.view.WatchViewStub;
 import android.widget.TextView;
 
 import com.kupferwerk.kupferriegel.injection.Injector;
-import com.kupferwerk.kupferriegel.sync.SyncController;
-
-import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -17,8 +14,6 @@ public class ShowDataActivity extends Activity {
 
    @InjectView (R.id.text)
    TextView dataView;
-   @Inject
-   SyncController syncController;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +28,5 @@ public class ShowDataActivity extends Activity {
             dataView.setText("Waiting for data");
          }
       });
-   }
-
-   @Override
-   protected void onResume() {
-      super.onResume();
-      syncController.connect();
-   }
-
-   @Override
-   protected void onPause() {
-      super.onPause();
-      syncController.disconnect();
    }
 }

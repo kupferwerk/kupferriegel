@@ -2,8 +2,6 @@ package com.kupferwerk.kupferriegel.injection;
 
 import android.content.Context;
 
-import com.kupferwerk.kupferriegel.sync.SyncController;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -17,10 +15,5 @@ public class AppModule {
 
 
 
-   @Provides
-   @Singleton
-   SyncController provideSyncController(final Context context) {
-      return new SyncController(context);
-   }
 
 }

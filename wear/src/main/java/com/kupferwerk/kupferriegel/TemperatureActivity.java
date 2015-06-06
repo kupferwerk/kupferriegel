@@ -13,8 +13,6 @@ import butterknife.InjectView;
 
 public class TemperatureActivity extends Activity {
 
-   public static final String EXTRA_TEMPERATURE = "extra.temperature";
-
    @InjectView (R.id.background)
    View background;
    @InjectView (R.id.value)
@@ -29,10 +27,11 @@ public class TemperatureActivity extends Activity {
          @Override
          public void onLayoutInflated(WatchViewStub stub) {
             ButterKnife.inject(TemperatureActivity.this);
-            float temperature = getIntent().getFloatExtra(EXTRA_TEMPERATURE, 27.5f);
+            float temperature = getIntent().getFloatExtra("temperature", -372f);
 
             background.setBackgroundColor(
                   getResources().getColor(StatusChecker.getColorTemperatur(temperature)));
+
             value.setText(temperature + "");
          }
       });

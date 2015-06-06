@@ -22,7 +22,7 @@ public class MainActivity extends Activity
 
    private GoogleApiClient apiClient;
    private boolean connected;
-   private static float count = 22.5f;
+   private static float count = 22.0f;
 
    @Override
    public void onConnected(Bundle bundle) {
@@ -75,7 +75,7 @@ public class MainActivity extends Activity
                return;
             }
             PutDataMapRequest mapRequest = PutDataMapRequest.create("/temperature");
-            mapRequest.getDataMap().putFloat("temperature", ++count);
+            mapRequest.getDataMap().putFloat("temperature", (count + 1f));
 
             PutDataRequest putDataReq = mapRequest.asPutDataRequest();
             PendingResult<DataApi.DataItemResult> pendingResult =
