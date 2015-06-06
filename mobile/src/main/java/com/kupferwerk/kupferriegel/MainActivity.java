@@ -28,7 +28,6 @@ import io.relayr.model.User;
 import rx.Observer;
 import rx.Subscriber;
 
-
 public class MainActivity extends Activity
       implements DataApi.DataListener, GoogleApiClient.ConnectionCallbacks,
       GoogleApiClient.OnConnectionFailedListener {
@@ -147,8 +146,6 @@ public class MainActivity extends Activity
       apiClient.disconnect();
       super.onPause();
    }
-
-}
 
    @Override
    protected void onResume() {
