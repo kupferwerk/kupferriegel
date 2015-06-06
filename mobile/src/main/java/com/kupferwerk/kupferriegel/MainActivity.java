@@ -7,12 +7,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.kupferwerk.kupferriegel.detection.TemperatureOverDetector;
 import com.kupferwerk.kupferriegel.device.DeviceController;
 import com.kupferwerk.kupferriegel.device.ReadingInfo;
 import com.kupferwerk.kupferriegel.user.UserController;
 
 import io.relayr.RelayrSdk;
-import io.relayr.model.DeviceModel;
 import io.relayr.model.User;
 import rx.Observer;
 import rx.Subscriber;
@@ -105,29 +105,11 @@ public class MainActivity extends Activity {
    }
 
    private void loadDevices() {
-
-      Subscriber subscriber = new Subscriber<ReadingInfo>() {
-
-         @Override
-         public void onCompleted() {
-
-         }
-
-         @Override
-         public void onError(Throwable e) {
-
-         }
-
-         @Override
-         public void onNext(ReadingInfo readingInfo) {
-            printReading(readingInfo);
-         }
-      };
-
-      deviceController.getDevice(DeviceModel.TEMPERATURE_HUMIDITY).subscribe(subscriber);
-      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
-      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe(subscriber);
-      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
+      TemperatureOverDetector temperatureOverDetector = new TemperatureOverDetector(deviceController);
+      temperatureOverDetector.start();
+//      deviceController.getDevice(DeviceModel.LIGHT_PROX_COLOR).subscribe(subscriber);
+//      deviceController.getDevice(DeviceModel.ACCELEROMETER_GYROSCOPE).subscribe(subscriber);
+//      deviceController.getDevice(DeviceModel.MICROPHONE).subscribe(subscriber);
    }
 
    private void printReading(ReadingInfo readingInfo) {
