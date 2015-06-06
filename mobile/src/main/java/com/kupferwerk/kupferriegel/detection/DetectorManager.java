@@ -32,7 +32,7 @@ public class DetectorManager {
       if ((flags & DETECTOR_HANDSHAKE) > 0) {
          // TODO Add handshake detector
       } else if ((flags & DETECTOR_HUG) > 0) {
-         // TODO Add hug detector
+         detectors.add(new HugDetector());
       }
    }
 
