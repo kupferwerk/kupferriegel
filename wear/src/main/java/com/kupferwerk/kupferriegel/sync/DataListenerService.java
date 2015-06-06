@@ -8,7 +8,6 @@ import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.WearableListenerService;
-import com.kupferwerk.kupferriegel.ShowDataActivity;
 import com.kupferwerk.kupferriegel.TemperatureActivity;
 
 public class DataListenerService extends WearableListenerService {
@@ -18,7 +17,6 @@ public class DataListenerService extends WearableListenerService {
    @Override
    public void onDataChanged(DataEventBuffer dataEvents) {
       super.onDataChanged(dataEvents);
-      
 
       for (DataEvent dataEvent : dataEvents) {
          if (dataEvent.getType() == DataEvent.TYPE_CHANGED) {
@@ -36,7 +34,7 @@ public class DataListenerService extends WearableListenerService {
       Intent intent = new Intent(this, TemperatureActivity.class);
       float temperature = dataMap.getFloat(TEMPERATURE);
       intent.putExtra(TemperatureActivity.EXTRA_TEMPERATURE, temperature);
-
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       startActivity(intent);
    }
 }
