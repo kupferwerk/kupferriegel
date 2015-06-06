@@ -12,6 +12,7 @@ import android.widget.Toolbar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.Wearable;
@@ -37,6 +38,7 @@ public class MainActivity extends Activity
       implements DataApi.DataListener, GoogleApiClient.ConnectionCallbacks,
       GoogleApiClient.OnConnectionFailedListener {
 
+   public static final String SHAKES = "shakes";
    public static final String SHAKE_COUNT = "Shake_Count";
    Observer<User> loginObserver = new Observer<User>() {
       @Override
@@ -61,6 +63,7 @@ public class MainActivity extends Activity
    Toolbar toolbar;
    UserController userController = new UserController(this);
    DeviceController deviceController = new DeviceController(this, userController);
+   private AchievementController achievementController;
    private GoogleApiClient apiClient;
    private HandshakeDetector handshakeDector;
    private RegistrationController registrationController;
@@ -99,7 +102,8 @@ public class MainActivity extends Activity
    public void onConnected(Bundle bundle) {
       temperatureOverDetector.setGoogleApiClient(apiClient);
       noiseOverDetector.setGoogleApiClient(apiClient);
-      
+      achievementController = new AchievementController();
+      achievementController.check(apiClient, this);
    }
 
    @Override
@@ -150,7 +154,7 @@ public class MainActivity extends Activity
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       this.apiClient = new GoogleApiClient.Builder(this).addConnectionCallbacks(this)
-            .addOnConnectionFailedListener(this).addApi(Wearable.API).build();
+            .addOnConnectionFailedListener(this).addApi(Wearable.API).addApi(Games.API).build();
       setContentView(R.layout.activity_main);
       ButterKnife.inject(this);
       setActionBar(toolbar);
@@ -198,11 +202,12 @@ public class MainActivity extends Activity
       temperatureOverDetector.start();
       noiseOverDetector = new NoiseOverDetector(deviceController);
       noiseOverDetector.start();
+      handshakeDector = new HandshakeDetector(deviceController);
       handshakeDector.start().subscribe(new Action1<DetectorResult>() {
          @Override
          public void call(DetectorResult detectorResult) {
             Log.d("Shake", "Handshake");
-            final SharedPreferences preferences = getSharedPreferences("shakes", MODE_PRIVATE);
+            final SharedPreferences preferences = getSharedPreferences(SHAKES, MODE_PRIVATE);
             int count = preferences.getInt(SHAKE_COUNT, 0);
             preferences.edit().putInt(SHAKE_COUNT, count++).apply();
          }
