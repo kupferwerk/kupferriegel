@@ -1,4 +1,4 @@
-package com.kupferwerk.kupferriegel.login;
+package com.kupferwerk.kupferriegel.user;
 
 import android.app.Activity;
 
