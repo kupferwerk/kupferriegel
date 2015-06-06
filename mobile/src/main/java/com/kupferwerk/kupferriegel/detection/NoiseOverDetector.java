@@ -69,7 +69,7 @@ public class NoiseOverDetector {
       }).cast(Double.class).filter(new Func1<Double, Boolean>() {
          @Override
          public Boolean call(Double d) {
-            return d >= 100;
+            return d >= 500;
          }
       }).sample(3, TimeUnit.SECONDS).map(new Func1<Double, Float>() {
          @Override

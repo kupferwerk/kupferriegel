@@ -68,7 +68,7 @@ public class TemperatureActivity extends Activity implements Synchable {
          public void run() {
             background.setBackgroundColor(
                   getResources().getColor(StatusChecker.getColorTemperatur(temperature)));
-            value.setText(temperature + "");
+            value.setText(temperature + "°C");
          }
       });
    }

@@ -70,7 +70,7 @@ public class TemperatureOverDetector {
       }).cast(Double.class).filter(new Func1<Double, Boolean>() {
          @Override
          public Boolean call(Double d) {
-            return d >= 30;
+            return d >= 32;
          }
       }).sample(5, TimeUnit.SECONDS).map(new Func1<Double, Float>() {
          @Override

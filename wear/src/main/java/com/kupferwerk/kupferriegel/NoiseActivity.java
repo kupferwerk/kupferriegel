@@ -67,7 +67,7 @@ public class NoiseActivity extends Activity implements Synchable {
          public void run() {
             background.setBackgroundColor(
                   getResources().getColor(StatusChecker.getColorTemperatur(noise)));
-            value.setText(noise + "");
+            value.setText("Be quiet!\n" + noise);
          }
       });
    }
