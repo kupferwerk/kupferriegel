@@ -1,16 +1,13 @@
 package com.kupferwerk.kupferriegel.utils.dtw;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SimpleDTWModel implements DTWModel {
 
    private double value;
 
-   public static List<SimpleDTWModel> buildFromDouble(Double... values) {
-      List<SimpleDTWModel> model = new ArrayList<>();
-      for (Double value : values) {
-         model.add(new SimpleDTWModel(value));
+   public static SimpleDTWModel[] buildFromDouble(Double... values) {
+      final SimpleDTWModel[] model = new SimpleDTWModel[values.length];
+      for (int i = 0; i < values.length; i++) {
+         model[i] = new SimpleDTWModel(values[i]);
       }
       return model;
    }
