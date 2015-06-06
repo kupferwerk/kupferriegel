@@ -11,6 +11,8 @@ public class DataListenerService extends WearableListenerService {
    @Override
    public void onDataChanged(DataEventBuffer dataEvents) {
       super.onDataChanged(dataEvents);
-      startActivity(new Intent(this, ShowDataActivity.class));
+      final Intent intent = new Intent(this, ShowDataActivity.class);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      startActivity(intent);
    }
 }
