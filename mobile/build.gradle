@@ -23,5 +23,5 @@ dependencies {
    compile fileTree(dir: 'libs', include: ['*.jar'])
    wearApp project(':wear')
    compile 'com.google.android.gms:play-services:+'
-   compile 'io.relayr:android-sdk:0.0.12'
+   compile 'io.relayr:android-sdk:0.0.13'
 }
