@@ -6,6 +6,7 @@ import com.kupferwerk.kupferriegel.utils.RxUtils;
 
 import io.relayr.RelayrSdk;
 import io.relayr.model.User;
+import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
@@ -29,38 +30,38 @@ public class UserController {
       RelayrSdk.logOut();
    }
 
-   private void loadUserInfo() {
-      userInfoSubscription =
-            RelayrSdk.getRelayrApi().getUserInfo().observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(new Subscriber<User>() {
-                     @Override
-                     public void onCompleted() {
-                     }
+   public Observable<User> loadUserInfo() {
+      if (!RelayrSdk.isUserLoggedIn()) {
+         return Observable.empty();
+      }
 
-                     @Override
-                     public void onError(Throwable e) {
-                        e.printStackTrace();
-                     }
+      return Observable.create(new Observable.OnSubscribe<User>() {
+         @Override
+         public void call(final Subscriber<? super User> subscriber) {
+            userInfoSubscription =
+                  RelayrSdk.getRelayrApi().getUserInfo().observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<User>() {
+                           @Override
+                           public void onCompleted() {
+                           }
 
-                     @Override
-                     public void onNext(final User user) {
-                        UserController.this.user = user;
-                     }
-                  });
+                           @Override
+                           public void onError(Throwable e) {
+                              e.printStackTrace();
+                           }
+
+                           @Override
+                           public void onNext(final User user) {
+                              UserController.this.user = user;
+                              subscriber.onNext(user);
+                           }
+                        });
+         }
+      });
    }
 
    public User getUser() {
       return user;
-   }
-
-   public void onResume() {
-      resubsribeUserInfo();
-   }
-
-   private void resubsribeUserInfo() {
-      if (RelayrSdk.isUserLoggedIn()) {
-         loadUserInfo();
-      }
    }
 
    public void onPause() {
