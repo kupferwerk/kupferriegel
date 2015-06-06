@@ -33,7 +33,7 @@ public class NoiseActivity extends Activity implements Synchable {
          super.handleMessage(msg);
          long now = System.currentTimeMillis();
 
-         if (now - lastUpdate > 5000) {
+         if (now - lastUpdate > 15000) {
             Syncher.getInstance().unregister(NoiseActivity.class.getCanonicalName());
             NoiseActivity.this.finish();
          } else {
