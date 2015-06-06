@@ -34,6 +34,7 @@ public class NoiseActivity extends Activity implements Synchable {
          long now = System.currentTimeMillis();
 
          if (now - lastUpdate > 5000) {
+            Syncher.getInstance().unregister(NoiseActivity.class.getCanonicalName());
             NoiseActivity.this.finish();
          } else {
             sendEmptyMessageDelayed(0, 5000);

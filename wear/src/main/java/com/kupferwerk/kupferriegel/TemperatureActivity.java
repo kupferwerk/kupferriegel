@@ -34,6 +34,7 @@ public class TemperatureActivity extends Activity implements Synchable {
          long now = System.currentTimeMillis();
 
          if (now - lastUpdate > 5000) {
+            Syncher.getInstance().unregister(TemperatureActivity.class.getCanonicalName());
             TemperatureActivity.this.finish();
          } else {
             sendEmptyMessageDelayed(0, 5000);
